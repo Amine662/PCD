@@ -1,0 +1,48 @@
+.slide-container{
+    margin-left: 12%;
+    margin-right: 12%;
+    margin-top: 2%;
+}
+.slide-list{
+    display: grid;
+    grid-template-columns: 25% 25% 25% 25%; 
+}
+.slide img{
+    margin-bottom: 2%;
+    border-radius: 15px;
+}
+.slide-list span{
+        cursor: pointer;
+        background-color: lightgray;
+        border-radius: 8px;
+        border: none; 
+        padding: 10px 75px;
+        text-align: center;
+        font-weight: 600;
+        color: #1A1A1A;
+    }
+#chicha1{
+    margin-left: 35px;
+}
+
+.box-container {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    gap: 2%;
+    padding: 20px;
+}
+
+.box {
+    background-color: black;
+    color: white;
+    padding: 20px ;
+    border-radius: 5px;
+    text-align: center;
+    flex: 1;
+
+}
+.all{
+    background-color: whitesmoke;
+}
+
