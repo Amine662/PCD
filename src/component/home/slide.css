@@ -29,15 +29,16 @@
     display: flex; 
     justify-content: space-between; 
     align-items: center;
-    gap: 2%;
+    gap: 2% 2%;
     padding: 20px;
 }
 
 .box {
-    background-color: black;
+    background-color: white;
     color: white;
-    padding: 20px ;
-    border-radius: 5px;
+    border: 1px solid #1A1A1A;
+    padding: 10% ;
+    border-radius: 16px;
     text-align: center;
     flex: 1;
 

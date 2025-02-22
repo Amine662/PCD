@@ -1,0 +1,42 @@
+.first-list nav{
+    display: flex;
+    margin-left: 20px;
+}
+
+.offlist ul{
+    list-style-type: none;
+    display: flex;
+    gap: 15px ; 
+    color: white;
+}
+.offlist li{
+    cursor: pointer;
+    background-color: whitesmoke;
+    border-radius: 20px;
+    border: solid 2px lightcyan;
+    color: blue; ; 
+    box-shadow: 0px 2px 5px (0,0,0,0.2) ;
+    padding: 8px 16px;
+    text-align: center;
+    font-weight: 600;
+}
+.offbox-container {
+    display: grid;
+    margin: 7%;
+    height:fit-content ; 
+    grid-template-columns: 20% 20% 20% 20%;
+    gap: 10% 5%; /* Adjust the gap between boxes as needed */
+}
+
+.offrebox {
+    color: blue;
+    background-color: whitesmoke; 
+    padding: 20% 50%; 
+    text-align: center;
+    border-radius: 16px;
+    height: 100%; 
+    border: 2px solid lightcyan; 
+}
+.lm3alem{
+    height:100%+29px;
+}

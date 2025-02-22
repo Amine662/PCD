@@ -13,8 +13,9 @@ const Navbar = () => {
     const navigate = useNavigate() ; 
     const [showpopup,setpopup]=useState(false)
     return (<>
+    <a id="top"></a>
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-        <div>
+        <div className="first-first">
             <div className="first_header a">
                 <div id="div1" >
                 <picture>

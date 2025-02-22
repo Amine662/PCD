@@ -1,3 +1,7 @@
+.first-first{
+    position:fixed;
+    width: 100%;
+}
 .first_header{
     display: flex;
 }
