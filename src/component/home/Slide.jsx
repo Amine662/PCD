@@ -15,16 +15,16 @@ const Slide = () => {
             </div>  
             <div className="slide-list">
                 <div>
-                <span  id="chicha1" onClick={()=>{navigate("/contact")}}><CiCreditCard1 /> Paiement en 4x </span>
+                <span  id="chicha1" onClick={()=>{navigate("/contact")}}><CiCreditCard1 className="paiement"/> Paiement en 4x </span>
                 </div>
                 <div>
-                <span id="chicha2" onClick={()=>{navigate("/contact")}}><FaEuroSign /> Prix bas toute l'année </span>
+                <span id="chicha2" onClick={()=>{navigate("/contact")}}><FaEuroSign className="prix"/> Prix bas toute l'année</span>
                 </div>
                 <div>
-                <span id="chicha3" onClick={()=>{navigate("/contact")}}><CiStar /> E-commerce engagé </span>
+                <span id="chicha3" onClick={()=>{navigate("/contact")}}><CiStar className="e-commerce"/> E-commerce engagé </span>
                 </div>
                 <div>
-                <span id="chicha4" onClick={()=>{navigate("/contact")}}><TbTruckDelivery /> Livraison sur mesure </span>
+                <span id="chicha4" onClick={()=>{navigate("/contact")}}><TbTruckDelivery className="livraison"/> Livraison sur mesure </span>
                 </div>
             </div>
             <div><h2 style={{fontSize:"30px" , fontWeight:"450" , marginTop:"3%"}}>Inspiré de vos visites</h2></div>

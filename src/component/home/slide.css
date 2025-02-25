@@ -1,3 +1,4 @@
+
 .slide-container{
     margin-left: 12%;
     margin-right: 12%;
@@ -5,7 +6,8 @@
 }
 .slide-list{
     display: grid;
-    grid-template-columns: 25% 25% 25% 25%; 
+    grid-template-columns: 24% 24% 24% 24%;
+    gap: 15px; 
 }
 .slide img{
     margin-bottom: 2%;
@@ -22,8 +24,42 @@
         color: #1A1A1A;
     }
 #chicha1{
-    margin-left: 35px;
+    display: flex;
+   font-size: 15px;
+   gap: 4px;
+   justify-content: center;
+   align-items: center;
+   height: 100%;
+
 }
+#chicha2{
+    display: flex;
+   font-size: 15px;
+   gap: 4px;
+   justify-content: center;
+   align-items: center;
+   height: 100%;
+
+}
+#chicha3{
+    display: flex;
+   font-size: 15px;
+   gap: 4px;
+   justify-content: center;
+   align-items: center;
+   height: 100%;
+
+}
+#chicha4{
+    display: flex;
+   font-size: 15px;
+   gap: 4px;
+   justify-content: center;
+   align-items: center;
+   height: 100%;
+
+}
+
 
 .box-container {
     display: flex; 
@@ -41,9 +77,25 @@
     border-radius: 16px;
     text-align: center;
     flex: 1;
-
+    
 }
 .all{
     background-color: whitesmoke;
+}
+.paiement{   
+     height: 30px;
+    width: 30px;
+}
+.livraison{   
+     height: 30px;
+    width: 30px;
+}
+.e-commerce{   
+     height: 30px;
+    width: 30px;
+}
+.prix{   
+     height: 20px;
+    width: 20px;
 }
 

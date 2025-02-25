@@ -16,7 +16,7 @@ const Footer = () => {
           <span>
             <a href="#top">
               Retour en haut page
-              <FaArrowUp />
+              <FaArrowUp className="arrow"/>
             </a>
           </span>
         </div>

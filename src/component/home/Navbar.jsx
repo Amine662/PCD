@@ -12,8 +12,9 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 const Navbar = () => {
     const navigate = useNavigate() ; 
     const [showpopup,setpopup]=useState(false)
-    return (<>
-    <a id="top"></a>
+    return (
+        <div className="margin">
+<a id="top"></a>
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
         <div className="first-first">
             <div className="first_header a">
@@ -36,7 +37,7 @@ const Navbar = () => {
                 <div id="div3" > 
                 <AiOutlineUser 
                 className="login-button"/>
-                    <p>Connectez-vous</p> 
+                    <p className="paraph">Connectez-vous</p> 
 
 
                 </div>
@@ -44,7 +45,7 @@ const Navbar = () => {
                 <div id="div4"> 
 
                 <CiShoppingCart className="cart-button"/>
-                   <p>Mon panier</p>  
+                   <p className="paraph">Mon panier</p>  
 
                    </div>
             </div>
@@ -100,6 +101,10 @@ const Navbar = () => {
         <div></div>
         </div>
         }
-      </>)
+      <div/>
+        </div>
+    
+     
+    )
 }
 export default Navbar ;

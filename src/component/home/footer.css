@@ -12,7 +12,11 @@
     gap: 10px;
     padding: 10px 100px;
   }
-  
+  .arrow{
+    margin-left: 10px;
+    width: 11px;
+    height: 11px;
+  }
   .back-to-top {
     background-color: white;
     text-align: center;
