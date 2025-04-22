@@ -1,0 +1,16 @@
+body,
+.checkout-page-bg {
+  background-color: whitesmoke;
+}
+
+.checkout-banner {
+  background: linear-gradient(90deg, #1a1a1a, #f5f6e3);
+  border-radius: 12px;
+  padding: 30px 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+.checkout-logo {
+  height: 60px; 
+}

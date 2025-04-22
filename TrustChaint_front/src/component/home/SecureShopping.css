@@ -1,0 +1,18 @@
+.secure-shopping-bg {
+  background: linear-gradient(45deg, #1a1a1a , #f5f6e3)
+}
+
+
+.text-gradient {
+  background: linear-gradient(to right, #FFA900, white);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.secure-shopping-bg .feature-box {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .secure-shopping-bg .feature-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(255, 255, 255, 0.15);
+  }

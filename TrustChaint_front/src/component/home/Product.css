@@ -1,0 +1,17 @@
+
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+  }
+  
+  /* Hover effect */
+  .card:hover {
+    transform: translateY(-5px); /* Lift the card on hover */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* More intense shadow on hover */
+  }
+
+  
+  
+
+  
