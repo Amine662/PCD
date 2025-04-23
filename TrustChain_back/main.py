@@ -4,8 +4,11 @@ from routers.users_router import router as users_router
 from fastapi.middleware.cors import CORSMiddleware
 from models.errors import APIError, ERROR_STATUS_CODES
 import uvicorn
+import auth
 
 app = FastAPI(debug=True)
+app.title = "TrustChain API"
+app.include_router(auth.router)
 
 @app.middleware("http")
 async def error_handling_middleware(request: Request, call_next):

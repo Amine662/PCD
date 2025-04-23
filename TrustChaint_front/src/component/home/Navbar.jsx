@@ -85,7 +85,7 @@ const Navbar = () => {
                   role="button"
                 >
                   <AiOutlineUser size={24} />
-                  <p onClick={()=>{navigate('/account')}} className="mb-0 small"><b>{localStorage.getItem('token')}</b></p>
+                  <p onClick={()=>{navigate('/account')}} className="mb-0 small"><b>{localStorage.getItem('user')}</b></p>
                 </div>}
 
                 {/* Cart with margin-right */}

@@ -94,3 +94,11 @@ For debugging, you can run the application using VS Code's debugger:
 2. Select the Python interpreter from the virtual environment
 3. Press F5 to start debugging
 4. The Swagger UI will be available at http://localhost:8001/docs
+
+
+
+## JWT dependencies
+
+1. pip install "python-jose[cryptography]"
+2. pip install "passlib[bcrypt]"
+3. pip install python-multipart
