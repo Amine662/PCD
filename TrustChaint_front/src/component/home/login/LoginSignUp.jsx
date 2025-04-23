@@ -13,7 +13,7 @@ const LoginSignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const API_URL = "http://localhost:8000/users"; // adjust if needed
+  const API_URL = "http://localhost:8001/users"; // adjust if needed
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -36,7 +36,7 @@ const LoginSignUp = () => {
     e.preventDefault();
     try {
       // Replace with your backend login endpoint (e.g. /api/login)
-      const res = await axios.post("http://localhost:8000/login", {
+      const res = await axios.post("http://localhost:8001/login", {
         email,
         password,
       });
