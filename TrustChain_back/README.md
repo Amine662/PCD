@@ -1,6 +1,6 @@
-# TuniTrade Backend
+# TrustChain Backend
 
-This is the backend server for the TuniTrade application built with FastAPI and MongoDB.
+This is the backend server for the TrustChain application built with FastAPI and MongoDB.
 
 ## Prerequisites
 
@@ -47,7 +47,7 @@ Make sure MongoDB is running on your system. The application expects MongoDB to 
 
 ## Running the Application
 
-1. Make sure you're in the TuniTrade-back directory
+1. Make sure you're in the TrustChain-back directory
 2. Activate the virtual environment (if not already activated)
 3. Run the FastAPI application:
 
