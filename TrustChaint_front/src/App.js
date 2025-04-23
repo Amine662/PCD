@@ -11,6 +11,7 @@
   import ProductDetail from './component/home/ProductDetail';
   import Addtocart from './component/home/Addtocart';
   import CheckoutPage from './component/home/CheckoutPage';
+  import Account from './component/home/Account';
 
   function App() {
     return (
@@ -26,6 +27,7 @@
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/addtocart" element={<Addtocart />} />
           <Route path="/check" element={<CheckoutPage/>} />
+          <Route path="/account" element={<Account />} />
         </Routes>
       </Router>
 

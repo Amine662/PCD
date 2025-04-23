@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from routers.users_router import router as users_router
+from fastapi.middleware.cors import CORSMiddleware
 from models.errors import APIError, ERROR_STATUS_CODES
 import uvicorn
 
@@ -39,3 +40,12 @@ if __name__ == "__main__":
         debug=True,  
         log_level="debug"
     )
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # React dev server
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)

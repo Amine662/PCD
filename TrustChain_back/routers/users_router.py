@@ -1,8 +1,9 @@
 from fastapi import APIRouter
+from fastapi import HTTPException
 from bson import ObjectId
 from pymongo import MongoClient
 from pymongo.errors import PyMongoError, DuplicateKeyError
-from models.user_model import User, UserUpdate
+from models.user_model import User, UserUpdate, LoginRequest
 from models.errors import ErrorCode, APIError
 
 router = APIRouter(
@@ -14,6 +15,7 @@ try:
     client = MongoClient('mongodb://localhost:27017/')
     db = client['Users']
     collection = db['Infos']
+    print("MongoDB connection established.")
 except PyMongoError:
     raise APIError(ErrorCode.DATABASE_CONNECTION_ERROR)
 
@@ -21,6 +23,28 @@ def serialize_user(user):
     if user:
         user['_id'] = str(user['_id'])
     return user
+
+
+@router.post("/login")
+def login_user(data: LoginRequest):
+    user = collection.find_one({"email": data.email})
+
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if user["password"] != data.password:
+        raise HTTPException(status_code=401, detail="Incorrect password")
+
+    return {
+        "message": "Login successful",
+        "user": {
+            "name": user["name"],
+            "email": user["email"],
+            "age": user["age"],
+        }
+    }
+
+
 
 @router.get("/users")
 async def get_users_by_name(name: str = None):

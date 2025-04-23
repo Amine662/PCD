@@ -12,3 +12,7 @@ class UserUpdate(BaseModel):
     age: Optional[int] = None
     email: Optional[str] = None
     password: Optional[str] = None
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str

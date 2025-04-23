@@ -72,14 +72,21 @@ const Navbar = () => {
             <div className="col-md-3">
               <div className="d-flex justify-content-end align-items-center">
                 {/* Sign In */}
-                <div
+                {!localStorage.getItem('token')?<div
                   className="d-flex flex-column align-items-center text-warning"
                   onClick={() => navigate("/login")}
                   role="button"
                 >
                   <AiOutlineUser size={24} />
                   <p className="mb-0 small">Sign in</p>
-                </div>
+                </div>:<div
+                  className="d-flex flex-column align-items-center text-warning"
+                  
+                  role="button"
+                >
+                  <AiOutlineUser size={24} />
+                  <p onClick={()=>{navigate('/account')}} className="mb-0 small"><b>{localStorage.getItem('token')}</b></p>
+                </div>}
 
                 {/* Cart with margin-right */}
                 <div

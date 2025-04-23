@@ -6,7 +6,7 @@ const About = () => {
   const navigate = useNavigate(); // Initialize navigate function
 
   return (
-    <section style={{ backgroundColor: "#1a1a1a" }} className="text-white py-5">
+    <section style={{ backgroundColor: "#1a1a1a", height:"740px" }} className="text-white py-5">
       <div className="container">
         <h1 className="display-5 fw-bold mb-4 text-center">
           About <span className="text-warning">Us</span>
