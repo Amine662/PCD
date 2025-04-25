@@ -1,37 +1,23 @@
-from datetime import datetime, timedelta
-from fastapi import APIRouter, Depends, HTTPException
-from pymongo.database import Database
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
-from starlette import status
-from models.user_model import User
+from bson import ObjectId
+from pymongo.database import Database
 from passlib.context import CryptContext
 from jose import jwt, JWTError
+from datetime import datetime, timedelta
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from db import get_db
+from models.user_model import LoginRequest, User
 
-router = APIRouter(
-    prefix="/auth",
-    tags=["auth"]
-)
+router = APIRouter(prefix="/auth", tags=["auth"])
 
-# JWT Config
-SECRET_KEY = "5957c70cba5e9973392b9412a3c3c7ed8614567be9b663040cce77262814f694"
+SECRET_KEY = "7dc378f37ad225c2712728e4644350c56f53abe1330d790567e676e10f1d54d8"
 ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-# Password hashing
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
-# Request models
-class CreateUserRequest(BaseModel):
-    name: str
-    age: int
-    email: str
-    password: str
-
-class LoginRequest(BaseModel):
-    email: str
-    password: str
-
-# Response models
 class UserOut(BaseModel):
     name: str
     age: int
@@ -42,83 +28,104 @@ class LoginResponse(BaseModel):
     token_type: str
     user: UserOut
 
-# Create user route
-@router.post("/", status_code=status.HTTP_201_CREATED)
-def create_user(user: CreateUserRequest, db: Database = Depends(get_db)):
-    existing_user = db["Infos"].find_one({"email": user.email})
-    if existing_user:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User already exists")
+class UpdateUserRequest(BaseModel):
+    name: str
+    email: str
+    age: int
+    password: str = None     
 
-    hashed_password = bcrypt_context.hash(user.password)
-    new_user = User(name=user.name, age=user.age, email=user.email, password=hashed_password)
+@router.post("/register")
+def register(user: User, db: Database = Depends(get_db)):
+    if db["Infos"].find_one({"email": user.email}):
+        raise HTTPException(status_code=400, detail="User already exists")
 
-    try:
-        db["Infos"].insert_one(new_user.dict())
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create user")
-
+    user_dict = user.dict()
+    user_dict["password"] = bcrypt_context.hash(user.password)
+    db["Infos"].insert_one(user_dict)
     return {"message": "User created successfully"}
 
-# Login and return token + user
-@router.post("/login", response_model=LoginResponse)
-def login_for_access_token(
-    login_data: LoginRequest,
-    db: Database = Depends(get_db)
-):
-    user = authenticate_user(login_data.email, login_data.password, db)
-    if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
-
-    access_token = create_access_token(user["email"], user["name"])
-
-    user_out = {
-        "name": user["name"],
-        "age": user["age"],
-        "email": user["email"]
-    }
-
-    return {
-        "access_token": access_token,
-        "token_type": "bearer",
-        "user": user_out
-    }
-
-# Helper: User authentication
 def authenticate_user(email: str, password: str, db: Database):
     user = db["Infos"].find_one({"email": email})
     if not user or not bcrypt_context.verify(password, user["password"]):
-        return False
+        return None
     return user
 
-# Helper: JWT creation
-def create_access_token(email: str, name: str, expires_delta: timedelta = None):
-    to_encode = {"sub": email, "name": name}
-    expire = datetime.utcnow() + (expires_delta if expires_delta else timedelta(minutes=15))
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+def create_access_token(email: str, expires_delta: timedelta = None):
+    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    to_encode = {"sub": email, "exp": expire}
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-# Dependency: Get current user
-def get_current_user(
-    token: str,
-    db: Database = Depends(get_db)
-):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+@router.post("/login", response_model=LoginResponse)
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Database = Depends(get_db)):
+    user = authenticate_user(form_data.username, form_data.password, db)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
 
+    token = create_access_token(user["email"])
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "name": user["name"],
+            "email": user["email"],
+            "age": user.get("age", 0),
+        }
+    }
+
+@router.post("/login-json", response_model=LoginResponse)
+def login_with_json(data: LoginRequest, db: Database = Depends(get_db)):
+    user = authenticate_user(data.email, data.password, db)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    token = create_access_token(user["email"])
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "name": user["name"],
+            "email": user["email"],
+            "age": user.get("age", 0),
+        }
+    }
+
+def get_current_user(token: str = Depends(oauth2_scheme), db: Database = Depends(get_db)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
-        if email is None:
-            raise credentials_exception
+        email: str = payload.get("sub") 
+        if not email:
+            raise HTTPException(status_code=401, detail="Invalid token payload")
+
+        user = db["Infos"].find_one({"email": email})
+        if not user:
+            raise HTTPException(status_code=401, detail="User not found")
+
+        return {
+            "user_id": str(user["_id"]),  # Add the user_id
+            "name": user["name"],
+            "email": user["email"],
+            "age": user.get("age", 0),
+        }
     except JWTError:
-        raise credentials_exception
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+@router.put("/update/{user_id}")
+def update_user(user_id: str, update_data: UpdateUserRequest, db: Database = Depends(get_db)):
+    if not ObjectId.is_valid(user_id):
+        raise HTTPException(status_code=400, detail="Invalid user ID")
 
-    user = db["Infos"].find_one({"email": email})
-    if user is None:
-        raise credentials_exception
+    update_dict = update_data.dict(exclude_unset=True)
 
-    return user
+    # Hash new password if provided
+    if "password" in update_dict:
+        update_dict["password"] = bcrypt_context.hash(update_dict["password"])
+
+    result = db["Infos"].update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": update_dict}
+    )
+
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return {"message": "User updated successfully"}

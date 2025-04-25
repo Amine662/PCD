@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Row,
@@ -8,6 +8,7 @@ import {
   Button,
   Spinner,
 } from 'react-bootstrap';
+import axios from 'axios';
 import logo from './logo.png';
 import './Account.css';
 import { useNavigate } from 'react-router-dom';
@@ -15,21 +16,79 @@ import { useNavigate } from 'react-router-dom';
 const Account = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState({
-    name: 'John Doe',
-    email: 'john@example.com',
-    age: 30,
-    address: '123 Main St, NY',
-  });
+  const [user, setUser] = useState(null); // user object with _id and password field optional
 
-  const handleUpdate = (e) => {
+  // Fetch user data on mount
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      try {
+        const res = await axios.get("http://localhost:8001/auth/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setUser({ ...res.data.user, password: "" }); // Add password field for update
+      } catch (err) {
+        console.error("Failed to fetch user data:", err);
+        navigate("/login");
+      }
+    };
+
+    fetchUserData();
+  }, [navigate]);
+
+  const handleUpdate = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const updatePayload = {
+        name: user.name,
+        email: user.email,
+        age: user.age,
+        address: user.address || "",
+      };
+
+      // Only include password if filled
+      if (user.password && user.password.trim() !== "") {
+        updatePayload.password = user.password;
+      }
+
+      await axios.put(
+        `http://localhost:8001/auth/update/${user.user_id}`,
+        updatePayload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      alert("Account updated!");
+    } catch (err) {
+      console.error("Update failed:", err);
+      alert("Failed to update account.");
+    } finally {
       setLoading(false);
-      alert('Account updated!');
-    }, 1500);
+    }
   };
+
+  if (!user) {
+    return (
+      <div className="text-center mt-5">
+        <Spinner animation="border" />
+      </div>
+    );
+  }
 
   return (
     <div className="account-page-bg">
@@ -57,7 +116,6 @@ const Account = () => {
                 <p><strong>Name:</strong> {user.name}</p>
                 <p><strong>Email:</strong> {user.email}</p>
                 <p><strong>Age:</strong> {user.age}</p>
-                <p><strong>Address:</strong> {user.address}</p>
               </Card.Body>
             </Card>
           </Col>
@@ -97,12 +155,14 @@ const Account = () => {
                     />
                   </Form.Group>
 
-                  <Form.Group className="mb-3" controlId="formAddress">
-                    <Form.Label>Address</Form.Label>
+
+                  <Form.Group className="mb-3" controlId="formPassword">
+                    <Form.Label>New Password</Form.Label>
                     <Form.Control
-                      type="text"
-                      value={user.address}
-                      onChange={(e) => setUser({ ...user, address: e.target.value })}
+                      type="password"
+                      placeholder="Leave blank to keep current password"
+                      value={user.password}
+                      onChange={(e) => setUser({ ...user, password: e.target.value })}
                     />
                   </Form.Group>
 
