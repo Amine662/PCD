@@ -8,31 +8,17 @@ from datetime import datetime, timedelta
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from db import get_db
 from models.user_model import LoginRequest, User
+from models.user_login import UpdateUserRequest, LoginResponse
+import os 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-SECRET_KEY = "7dc378f37ad225c2712728e4644350c56f53abe1330d790567e676e10f1d54d8"
-ALGORITHM = "HS256"
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
-
-class UserOut(BaseModel):
-    name: str
-    age: int
-    email: str
-
-class LoginResponse(BaseModel):
-    access_token: str
-    token_type: str
-    user: UserOut
-
-class UpdateUserRequest(BaseModel):
-    name: str
-    email: str
-    age: int
-    password: str = None     
 
 @router.post("/register")
 def register(user: User, db: Database = Depends(get_db)):
