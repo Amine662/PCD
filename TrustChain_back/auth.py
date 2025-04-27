@@ -10,11 +10,12 @@ from db import get_db
 from models.user_model import LoginRequest, User
 from models.auth_model import LoginResponse, UpdateUserRequest
 from typing import Annotated
-
+from models.user_login import UpdateUserRequest, LoginResponse
+import os 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-SECRET_KEY = "7dc378f37ad225c2712728e4644350c56f53abe1330d790567e676e10f1d54d8"
-ALGORITHM = "HS256"
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

@@ -61,3 +61,8 @@ ENV/
 # Logs
 *.log
 logs/
+
+.env
+**/.env
+**/node_modules/
+package-lock.json
