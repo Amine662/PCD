@@ -6,19 +6,24 @@ import { MdFormatListBulletedAdd } from "react-icons/md";
 import { FiX } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import logo from "./logo.png";
-import { useCart } from "../../context/CartContext"; // Make sure this is correct
+import { useCart } from "../../context/CartContext";
 
 const RAYONS = [
   "Home Appliances", "Computing", "Phones", "Home",
-  "Garden", "Beauty" , "Kids", "Sports", "Fashion",
-  "Automobiles","gaming", "Garden", "Pets", "Books & Culture",
+  "Garden", "Beauty", "Kids", "Sports", "Fashion",
+  "Automobiles", "Gaming", "Garden", "Pets", "Books & Culture",
 ];
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { cartItems } = useCart(); // From context
+  const { cartItems } = useCart();
   const [showpopup, setpopup] = useState(false);
+  const [showUserPopup, setShowUserPopup] = useState(false);
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
+
+  const userRole = localStorage.getItem("role"); // get role
+  const userName = localStorage.getItem("user");
+  const isLoggedIn = Boolean(localStorage.getItem("token"));
 
   useEffect(() => {
     if (showpopup) {
@@ -33,17 +38,21 @@ const Navbar = () => {
     }
   }, [showpopup]);
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("role");
+    navigate("/");
+  };
+
   return (
     <div>
-      {/* Fixed Navbar Section */}
       <div
         className="bg-dark text-white"
         style={{ position: "fixed", top: 0, width: "100%", zIndex: 1050 }}
       >
-        {/* Top Logo and Search */}
         <div className="container-fluid py-2">
           <div className="row align-items-center">
-            {/* Logo - increased size */}
             <div className="col-md-2 text-center">
               <img
                 src={logo}
@@ -53,7 +62,6 @@ const Navbar = () => {
               />
             </div>
 
-            {/* Search Bar - smaller height but wider */}
             <div className="col-md-7">
               <div className="input-group">
                 <input
@@ -68,27 +76,66 @@ const Navbar = () => {
               </div>
             </div>
 
-            {/* User and Cart Container - now positioned to the right */}
             <div className="col-md-3">
               <div className="d-flex justify-content-end align-items-center">
-                {/* Sign In */}
-                {!localStorage.getItem('token')?<div
-                  className="d-flex flex-column align-items-center text-warning"
-                  onClick={() => navigate("/login")}
-                  role="button"
-                >
-                  <AiOutlineUser size={24} />
-                  <p className="mb-0 small">Sign in</p>
-                </div>:<div
-                  className="d-flex flex-column align-items-center text-warning"
-                  
-                  role="button"
-                >
-                  <AiOutlineUser size={24} />
-                  <p onClick={()=>{navigate('/account')}} className="mb-0 small"><b>{localStorage.getItem('user')}</b></p>
-                </div>}
 
-                {/* Cart with margin-right */}
+                {/* User Icon */}
+                <div
+                  className="position-relative"
+                  onMouseEnter={() => setShowUserPopup(true)}
+                  onMouseLeave={() => setShowUserPopup(false)}
+                >
+                  <div
+                    className="d-flex flex-column align-items-center text-warning"
+                    role="button"
+                    onClick={() => {
+                      if (!isLoggedIn) {
+                        navigate("/login");
+                      }
+                    }}
+                  >
+                    <AiOutlineUser size={24} />
+                    <p className="mb-0 small">
+                      {isLoggedIn ? <b>{userName}</b> : "Sign in"}
+                    </p>
+                  </div>
+
+                  {/* User Popup */}
+                  {showUserPopup && isLoggedIn && (
+                    <div
+                      className="position-absolute user-popup"
+                      style={{
+                        top: "45px",
+                        right: 0,
+                        zIndex: 999,
+                        minWidth: "180px",
+                        backgroundColor: "#fff",
+                        borderRadius: "10px",
+                        boxShadow: "0px 4px 12px rgba(0,0,0,0.15)",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <div className="d-grid gap-2 p-2">
+                        {userRole !== "admin" && (
+                          <button
+                            className="btn btn-outline-dark btn-sm"
+                            onClick={() => navigate("/account")}
+                          >
+                            View Profile
+                          </button>
+                        )}
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={handleLogout}
+                        >
+                          Logout
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Cart Icon */}
                 <div
                   className="d-flex flex-column align-items-center position-relative text-warning"
                   onClick={() => navigate("/addtocart")}
@@ -112,6 +159,19 @@ const Navbar = () => {
                   </span>
                   <p className="mb-0 small">My cart</p>
                 </div>
+
+                {/* Seller Dashboard Button */}
+                {userRole === "seller" && (
+                  <div
+                    className="d-flex flex-column align-items-center text-warning"
+                    onClick={() => navigate("/seller-dashboard")}
+                    style={{ marginLeft: "30px", marginRight: "20px", cursor: "pointer" }}
+                  >
+                    <MdFormatListBulletedAdd size={24} />
+                    <p className="mb-0 small">My Dashboard</p>
+                  </div>
+                )}
+
               </div>
             </div>
           </div>
@@ -166,7 +226,7 @@ const Navbar = () => {
       {/* Spacer */}
       <div style={{ height: "180px" }}></div>
 
-      {/* Popup Menu */}
+      {/* Category Popup */}
       {showpopup && (
         <div
           className="position-fixed bg-white shadow-lg"
@@ -225,14 +285,14 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Hide scrollbar (CSS must be outside JSX) */}
+          {/* Hide scrollbar */}
           <style>{`
             .rayon-scroll::-webkit-scrollbar {
               display: none;
             }
             .rayon-scroll {
-              -ms-overflow-style: none; 
-              scrollbar-width: none; 
+              -ms-overflow-style: none;
+              scrollbar-width: none;
             }
           `}</style>
         </div>

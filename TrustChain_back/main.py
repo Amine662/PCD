@@ -1,14 +1,19 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from routers.users_router import router as users_router
+from routers.order_router import router as order_router
 from fastapi.middleware.cors import CORSMiddleware
 from models.errors import APIError, ERROR_STATUS_CODES
 import uvicorn
 import auth
+from routers.product_router import router as prod
 
 app = FastAPI(debug=True)
 app.title = "TrustChain API"
 app.include_router(auth.router)
+app.include_router(prod)
+app.include_router(users_router)
+app.include_router(order_router)
 
 @app.middleware("http")
 async def error_handling_middleware(request: Request, call_next):

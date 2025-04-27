@@ -85,11 +85,15 @@ const SecureShopping = () => {
         </div>
 
         {/* CTA Button */}
-        <div className="text-center mt-5">
-          <button onClick={() => navigate("/product")} className="btn btn-link text-warning fs-5 border-0 bg-transparent">
-            Explore Our Latest Products <i className="bi bi-arrow-right"></i>
-          </button>
-        </div>
+        <div className="d-flex flex-column flex-sm-row justify-content-center gap-3">
+  <button 
+    onClick={() => navigate("/login-seller")} 
+    className="btn btn-light text-dark shadow"
+  >
+    Join as Seller
+  </button>
+</div>
+
       </div>
     </section>
   );

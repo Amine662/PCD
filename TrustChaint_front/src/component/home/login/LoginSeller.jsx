@@ -4,7 +4,7 @@ import { FaKey } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const LoginSignUp = () => {
+const LoginSeller = () => {
   const navigate = useNavigate();
   const [action, setAction] = useState("Log In");
 
@@ -13,7 +13,7 @@ const LoginSignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const API_URL = "http://localhost:8001/auth/register"; // adjust if needed
+  const API_URL = "http://localhost:8001/auth/register-seller"; // adjust if needed
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -35,13 +35,18 @@ const LoginSignUp = () => {
   const handleLogIn = async (e) => {
     e.preventDefault();
     try {
-      // Replace with your backend login endpoint (e.g. /api/login)
       const res = await axios.post("http://localhost:8001/auth/login-json", {
         email,
         password,
       });
       localStorage.setItem("user",res.data.user.name);
       localStorage.setItem("token", res.data.access_token);
+      localStorage.setItem("role", res.data.user.role);
+      localStorage.setItem("user_id", res.data.user.user_id);
+      if (res.data.user.role !== "seller") {
+        alert("You are not a seller. Please log in as a seller.");  
+        return;
+      }
       navigate("/home");
     } catch (err) {
       console.error(err);
@@ -185,4 +190,4 @@ const LoginSignUp = () => {
   );
 };
 
-export default LoginSignUp;
+export default LoginSeller;

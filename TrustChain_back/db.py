@@ -9,3 +9,4 @@ def get_db():
         return db
     except PyMongoError:
         raise HTTPException(status_code=500, detail="Database connection error")
+    

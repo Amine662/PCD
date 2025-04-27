@@ -5,8 +5,10 @@ from typing import Annotated
 from pymongo.errors import DuplicateKeyError
 from models.user_model import User, UserUpdate, LoginRequest
 from models.errors import ErrorCode, APIError
-from db import get_db 
+from db import get_db
 from auth import get_current_user
+from auth import get_current_admin
+from models.Product_model import ProductUpdate
 
 router = APIRouter(tags=["users"])
 
@@ -14,12 +16,6 @@ def serialize_user(user):
     if user:
         user['_id'] = str(user['_id'])
     return user
-
-user_dependency = Annotated[dict, Depends(get_current_user)]
-
-@router.get("/auth/me", status_code=status.HTTP_200_OK)
-def get_current_user_info(user: user_dependency):
-    return {"user": user}
 
 @router.get("/users")
 async def get_users_by_name(name: str = None, db: Database = Depends(get_db)):
@@ -29,6 +25,7 @@ async def get_users_by_name(name: str = None, db: Database = Depends(get_db)):
         return [serialize_user(user) for user in users]
     except Exception:
         raise APIError(ErrorCode.DATABASE_QUERY_ERROR)
+
 
 @router.post("/users")
 async def create_user(user: User, db: Database = Depends(get_db)):
@@ -44,6 +41,7 @@ async def create_user(user: User, db: Database = Depends(get_db)):
     except Exception:
         raise APIError(ErrorCode.DATABASE_QUERY_ERROR)
 
+
 @router.get("/users/{user_id}")
 async def get_user(user_id: str, db: Database = Depends(get_db)):
     try:
@@ -53,6 +51,7 @@ async def get_user(user_id: str, db: Database = Depends(get_db)):
         return serialize_user(user)
     except Exception:
         raise APIError(ErrorCode.INVALID_USER_ID, detail=f"Invalid user ID format: {user_id}")
+
 
 @router.put("/users/{user_id}")
 async def update_user(user_id: str, user_update: UserUpdate, db: Database = Depends(get_db)):
@@ -70,6 +69,7 @@ async def update_user(user_id: str, user_update: UserUpdate, db: Database = Depe
     except Exception:
         raise APIError(ErrorCode.INVALID_USER_ID, detail=f"Invalid user ID format: {user_id}")
 
+
 @router.delete("/users/{user_id}")
 async def delete_user(user_id: str, db: Database = Depends(get_db)):
     try:
@@ -79,3 +79,11 @@ async def delete_user(user_id: str, db: Database = Depends(get_db)):
         return {"message": "User deleted successfully"}
     except Exception:
         raise APIError(ErrorCode.INVALID_USER_ID, detail=f"Invalid user ID format: {user_id}")
+    
+
+@router.get("/manage-users")
+def get_all_users(db = Depends(get_db)):
+    users = list(db["Infos"].find({"role": {"$ne": "admin"}})) 
+    for user in users:
+        user["_id"] = str(user["_id"])  # Convert ObjectId to string
+    return {"users": users}

@@ -6,7 +6,7 @@ import Categories from "./Categories";
 import Footer from "./Footer";
 import Chooseus from "./chooseus";
 import SecureShopping from "./SecureShopping";
-import CheckoutPage from "./CheckoutPage";
+
 
 const Home = () => {
     return (
@@ -21,8 +21,6 @@ const Home = () => {
             <Categories/>
             <Chooseus/>
             <Footer/>
-            
-            
         </div>
       )
 }

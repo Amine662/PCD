@@ -1,118 +1,70 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  Form,
-  Button,
-  Spinner,
-} from 'react-bootstrap';
-import axios from 'axios';
-import logo from './logo.png';
-import './Account.css';
 import { useNavigate } from 'react-router-dom';
+import { Container, Row, Col, Card, Form, Button, Spinner, Alert } from 'react-bootstrap';
+import DashboardLayout from './dashboard/DashboardLayout';
+import axios from 'axios';
 
-const Account = () => {
+const AdminProfil = () => {
   const navigate = useNavigate();
+  const [user, setUser] = useState({ name: '', email: '', age: '', password: '' });
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState(null);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) return navigate('/login');
-
       try {
-        const res = await axios.get('http://localhost:8001/auth/auth/me', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setUser({ ...res.data.user, password: '' });
+        const res = await axios.get('http://localhost:8001/auth/auth/admin');
+        console.log("Response Data:", res.data.user);
+
+        if (res.data.user) {
+          setUser({ ...res.data.user, password: '' });
+        } else {
+          setError('User data not found');
+        }
       } catch (err) {
         console.error('Fetch error:', err);
-        navigate('/login');
+        setError('Failed to fetch admin data');
       }
     };
+
     fetchUserData();
-  }, [navigate]);
+  }, []);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const token = localStorage.getItem('token');
+    setError(null);
+    setSuccess(null);
 
     try {
-      const payload = {
-        name: user.name,
-        email: user.email,
-        age: user.age,
-        address: user.address || '',
-        ...(user.password?.trim() && { password: user.password }),
-      };
+      const res = await axios.put(`http://localhost:8001/auth/update/${user.user_id}`, user, {
+        headers: { 'Content-Type': 'application/json' },
+      });
 
-      await axios.put(
-        `http://localhost:8001/auth/update/${user.user_id}`,
-        payload,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      alert('Account updated!');
+      console.log('Update Success:', res.data);
+      setSuccess('Profile updated successfully!');
+      setUser(prev => ({ ...prev, password: '' })); // Clear password field
     } catch (err) {
-      console.error('Update error:', err);
-      alert('Failed to update account.');
+      console.error('Update Error:', err);
+      setError('Failed to update profile');
     } finally {
       setLoading(false);
     }
   };
 
-  if (!user) {
-    return (
-      <div className="text-center mt-5">
-        <Spinner animation="border" />
-      </div>
-    );
-  }
-
   return (
-    <div className="account-page-bg">
-
-
-      <Container className="py-5">
-        <div className="account-banner text-center text-white py-4 mb-5" style={{ backgroundColor: '#1a1a1a' }}>
-          <img
-            src={logo}
-            alt="Logo"
-            role="button"
-            onClick={() => navigate('/')}
-            className="account-logo mb-3"
-            style={{ cursor: 'pointer', width: '100px' }}
-          />
-          <h2 className="fw-bold">My Account</h2>
-          <p>View and edit your personal details</p>
-        </div>
-
-        <Row className="justify-content-center">
-          <Col lg={5}>
-            <Card className="mb-4 shadow">
-              <Card.Header style={{ backgroundColor: '#1a1a1a', color: 'gold' }}>
-                Current Info
-              </Card.Header>
-              <Card.Body>
-                <p><strong>Name:</strong> {user.name}</p>
-                <p><strong>Email:</strong> {user.email}</p>
-                <p><strong>Age:</strong> {user.age}</p>
-              </Card.Body>
-            </Card>
-          </Col>
-
+    <DashboardLayout>
+      <Container>
+        <Row className="justify-content-center mt-5">
           <Col lg={7}>
             <Card className="shadow">
               <Card.Header style={{ backgroundColor: '#1a1a1a', color: 'gold' }}>
                 Update Info
               </Card.Header>
               <Card.Body>
+                {error && <Alert variant="danger">{error}</Alert>}
+                {success && <Alert variant="success">{success}</Alert>}
                 <Form onSubmit={handleUpdate}>
                   <Form.Group className="mb-3">
                     <Form.Label>Name</Form.Label>
@@ -160,8 +112,8 @@ const Account = () => {
           </Col>
         </Row>
       </Container>
-    </div>
+    </DashboardLayout>
   );
 };
 
-export default Account;
+export default AdminProfil;
