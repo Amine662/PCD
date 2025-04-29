@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from routers.users_router import router as users_router
 from routers.order_router import router as order_router
+from routers.blockchain_router import router as blockchain_router
 from fastapi.middleware.cors import CORSMiddleware
 from models.errors import APIError, ERROR_STATUS_CODES
 import uvicorn
@@ -16,6 +17,7 @@ app.include_router(prod)
 app.include_router(users_router)
 app.include_router(order_router)
 app.include_router(cart_router)
+app.include_router(blockchain_router)  # Add blockchain router
 
 @app.middleware("http")
 async def error_handling_middleware(request: Request, call_next):
