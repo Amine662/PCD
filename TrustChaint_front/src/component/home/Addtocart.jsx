@@ -1,22 +1,34 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '../../context/CartContext';
 import { Link } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { BsTrash } from 'react-icons/bs';
-
+import axios from 'axios';
 
 const Addtocart = () => {
-  const { cartItems, removeFromCart } = useCart();
+  const { removeFromCart, clearCart } = useCart();
+  const [cartDetails, setCartDetails] = useState({ items: [] });
 
-  const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
-  const shipping = 10.0;
-  const tax = subtotal * 0.07;
+  useEffect(() => {
+    axios
+      .get('http://localhost:8001/cart/' + localStorage.getItem('user_id'))
+      .then((r) => {
+        setCartDetails(r.data);
+        console.log("Cart Data:", r.data);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
+  // Order summary calculations
+  const subtotal = cartDetails.items.reduce(
+    (sum, item) => sum + item.product_details.price * item.quantity,
+    0
+  );
+  const shipping = subtotal > 0 ? 5.0 : 0; // $5 flat shipping if items exist
+  const taxRate = 0.07;
+  const tax = subtotal * taxRate;
   const total = subtotal + shipping + tax;
-
-  const handleClearCart = () => {
-    cartItems.forEach(item => removeFromCart(item.id));
-  };
 
   return (
     <div>
@@ -28,47 +40,43 @@ const Addtocart = () => {
             <div className="col-lg-8">
               <div className="bg-white rounded shadow-sm p-4">
                 <div className="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
-                  <h2 className="h5 fw-semibold mb-0">
-                    Shopping Cart ({cartItems.length} items)
-                  </h2>
-                  <button
-                    className="btn btn-outline-danger btn-sm"
-                    onClick={handleClearCart}
-                  >
-                    <i className="bi bi-trash me-2"></i>Clear
+                  <h2 className="h5 fw-semibold mb-0">Shopping Cart</h2>
+                  <button className="btn btn-outline-danger btn-sm" onClick={clearCart}>
+                    <BsTrash size={18} className="me-2" /> Clear
                   </button>
                 </div>
 
-                {cartItems.length === 0 ? (
+                {cartDetails.items.length === 0 ? (
                   <p className="text-muted">Your cart is empty.</p>
                 ) : (
-                  cartItems.map((item) => (
-                    <div key={item.id} className="d-flex align-items-center py-3 border-bottom">
+                  cartDetails.items.map((item) => (
+                    <div key={item._id} className="d-flex align-items-center py-3 border-bottom">
                       <button
-  className="btn btn-outline-danger btn-sm me-3 d-flex align-items-center justify-content-center"
-  onClick={() => removeFromCart(item.id)}
-  style={{ width: '36px', height: '36px' }}
->
-  <BsTrash size={18} />
-</button>
+                        className="btn btn-outline-danger btn-sm me-3 d-flex align-items-center justify-content-center"
+                        onClick={() => removeFromCart(item._id)}
+                        style={{ width: '36px', height: '36px' }}
+                      >
+                        <BsTrash size={18} />
+                      </button>
+
                       <div className="flex-shrink-0 me-3">
                         <img
-                          src={item.image}
-                          alt={item.name}
+                          src={item.product_details.image_url}
                           className="img-thumbnail"
-                          style={{ width: '80px', height: '80px' }}
+                          style={{ width: '80px', height: '80px', objectFit: 'cover' }}
                         />
                       </div>
+
                       <div className="flex-grow-1">
-                        <h5 className="mb-1">{item.name}</h5>
-                        <p className="mb-1 text-muted small">{item.category}</p>
-                        <p className="mb-0 text-muted">${item.price}</p>
+                        <h5 className="mb-1">{item.product_details.name}</h5>
+                        <p className="mb-1 text-muted small">{item.product_details.category}</p>
+                        <p className="mb-0 text-muted">${item.product_details.price}</p>
                       </div>
-                      <div className="mx-3">
-                        <span>{item.quantity}</span>
-                      </div>
+
+                      <div className="mx-3"><span>{item.quantity}</span></div>
+
                       <div className="text-end me-3" style={{ width: '100px' }}>
-                        <strong>${(item.price * item.quantity).toFixed(2)}</strong>
+                        <strong>${(item.product_details.price * item.quantity).toFixed(2)}</strong>
                       </div>
                     </div>
                   ))
@@ -76,12 +84,13 @@ const Addtocart = () => {
 
                 <div className="mt-4">
                   <Link to="/product" className="text-decoration-none text-primary">
-                    <i className="bi bi-arrow-left me-2"></i> Continue Shopping
+                    ← Continue Shopping
                   </Link>
                 </div>
               </div>
             </div>
 
+            {/* ✅ Order Summary */}
             <div className="col-lg-4">
               <div className="bg-white rounded p-4 shadow-sm sticky-top" style={{ top: '100px' }}>
                 <h2 className="h5 fw-bold mb-3">Order Summary</h2>
@@ -107,7 +116,7 @@ const Addtocart = () => {
                 </div>
 
                 <div className="d-grid gap-2">
-                  <Link to="/login?redirect=checkout" className="btn btn-secondary" >
+                  <Link to="/login?redirect=checkout" className="btn btn-secondary">
                     Sign In to Checkout
                   </Link>
                   <Link to="/product" className="btn btn-outline-secondary">
@@ -117,13 +126,11 @@ const Addtocart = () => {
 
                 <div className="mt-4 text-muted small">
                   <p className="mb-1">Secure Checkout with Blockchain</p>
-                  <p>
-                    We accept Ethereum and other major cryptocurrencies for secure, transparent,
-                    and immutable transactions.
-                  </p>
+                  <p>We accept Ethereum and other major cryptocurrencies for secure, transparent, and immutable transactions.</p>
                 </div>
               </div>
             </div>
+            {/* ✅ End Order Summary */}
           </div>
         </div>
       </div>

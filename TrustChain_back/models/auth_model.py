@@ -1,10 +1,11 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class UserOut(BaseModel):
     name: str
     age: int
     email: str
-    role: str = "user" 
+    role: str = "user"
     user_id: str
 
 class LoginResponse(BaseModel):
@@ -13,7 +14,7 @@ class LoginResponse(BaseModel):
     user: UserOut
 
 class UpdateUserRequest(BaseModel):
-    name: str
-    email: str
-    age: int
-    password: str = None 
+    name: Optional[str] = None
+    email: Optional[str] = None
+    age: Optional[int] = None
+    password: Optional[str] = None

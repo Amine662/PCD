@@ -4,6 +4,10 @@ class UserOut(BaseModel):
     name: str
     age: int
     email: str
+    role: str = "user" 
+    user_id: str
+
+
 
 class LoginResponse(BaseModel):
     access_token: str

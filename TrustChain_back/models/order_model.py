@@ -1,6 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel,Field
 from typing import List, Optional
 from datetime import datetime
+from models.cart_model import CartItem
 
 class OrderItem(BaseModel):
     product_name: str  # or int depending on your product id type
@@ -22,4 +23,13 @@ class OrderResponse(Order):
         orm_mode = True
 
 
+class OrderCreate(BaseModel):
+    user_id: str
+    seller_id: str
+    items: List[CartItem]
+    total_price: float
 
+class OrderInDB(OrderCreate):
+    id: str = Field(alias="_id")
+    status: str
+    created_at: datetime

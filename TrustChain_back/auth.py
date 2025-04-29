@@ -6,12 +6,15 @@ from passlib.context import CryptContext
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from db import get_db
-from models.user_model import LoginRequest, User
-from models.auth_model import LoginResponse, UpdateUserRequest
 from typing import Annotated
-from models.user_login import UpdateUserRequest, LoginResponse
-import os 
+import os
+from dotenv import load_dotenv
+from db import get_db
+from models.user_model import LoginRequest, User  # <-- correct models
+from models.auth_model import LoginResponse, UpdateUserRequest  # <-- correct models
+
+
+load_dotenv()
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -21,35 +24,20 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
+
+# Utility to serialize MongoDB user
 def serialize_user(user):
     if user:
         user['_id'] = str(user['_id'])
     return user
 
 
-@router.post("/register")
-def register(user: User, db: Database = Depends(get_db)):
-    if db["Infos"].find_one({"email": user.email}):
-        raise HTTPException(status_code=400, detail="User already exists")
-
-    user_dict = user.dict()
-    user_dict["password"] = bcrypt_context.hash(user.password)
-    db["Infos"].insert_one(user_dict)
-    return {"message": "User created successfully"}
+# Hash password
+def hash_password(password: str):
+    return bcrypt_context.hash(password)
 
 
-@router.post("/register-seller")
-def register_seller(user: User, db: Database = Depends(get_db)):
-    if db["Infos"].find_one({"email": user.email}):
-        raise HTTPException(status_code=400, detail="User already exists")
-
-    user_dict = user.dict()
-    user_dict["role"] = "seller"  # Set role to seller for seller accounts
-    user_dict["password"] = bcrypt_context.hash(user.password)
-    db["Infos"].insert_one(user_dict)
-    return {"message": "Seller account created successfully"}
-
-
+# Authenticate user
 def authenticate_user(email: str, password: str, db: Database):
     user = db["Infos"].find_one({"email": email})
     if not user or not bcrypt_context.verify(password, user["password"]):
@@ -57,12 +45,39 @@ def authenticate_user(email: str, password: str, db: Database):
     return user
 
 
+# Create JWT token
 def create_access_token(email: str, expires_delta: timedelta = None):
     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode = {"sub": email, "exp": expire}
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
+# Register normal user
+@router.post("/register")
+def register(user: User, db: Database = Depends(get_db)):
+    if db["Infos"].find_one({"email": user.email}):
+        raise HTTPException(status_code=400, detail="User already exists")
+
+    user_dict = user.dict()
+    user_dict["password"] = hash_password(user.password)
+    db["Infos"].insert_one(user_dict)
+    return {"message": "User created successfully"}
+
+
+# Register seller
+@router.post("/register-seller")
+def register_seller(user: User, db: Database = Depends(get_db)):
+    if db["Infos"].find_one({"email": user.email}):
+        raise HTTPException(status_code=400, detail="User already exists")
+
+    user_dict = user.dict()
+    user_dict["role"] = "seller"
+    user_dict["password"] = hash_password(user.password)
+    db["Infos"].insert_one(user_dict)
+    return {"message": "Seller account created successfully"}
+
+
+# Login (form-data login)
 @router.post("/login", response_model=LoginResponse)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Database = Depends(get_db)):
     user = authenticate_user(form_data.username, form_data.password, db)
@@ -70,32 +85,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Database = Depen
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     token = create_access_token(user["email"])
-    return {
-        "access_token": token,
-        "token_type": "bearer",
-        "user": {
-            "name": user["name"],
-            "email": user["email"],
-            "age": user.get("age", 0),
-            "role": user.get("role", "user")
-        }
-    }
 
-
-
-@router.post("/login-json", response_model=LoginResponse)
-def login_with_json(data: LoginRequest, db: Database = Depends(get_db)):
-    user = authenticate_user(data.email, data.password, db)
-    
-    if not user:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-
-    # Convert the ObjectId to a string
-    user_id = str(user["_id"])  # MongoDB _id is an ObjectId, so we convert it to a string
-    
-    token = create_access_token(user["email"])
-    
-    # Return the user details with the correct user_id
     return {
         "access_token": token,
         "token_type": "bearer",
@@ -104,13 +94,34 @@ def login_with_json(data: LoginRequest, db: Database = Depends(get_db)):
             "email": user.get("email"),
             "age": user.get("age", 0),
             "role": user.get("role", "user"),
-            "user_id": user_id,  # Correctly return the user_id here as a string
+            "user_id": str(user["_id"]),
         }
     }
 
 
+# Login (JSON body login)
+@router.post("/login-json", response_model=LoginResponse)
+def login_with_json(data: LoginRequest, db: Database = Depends(get_db)):
+    user = authenticate_user(data.email, data.password, db)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    token = create_access_token(user["email"])
+
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "name": user.get("name"),
+            "email": user.get("email"),
+            "age": user.get("age", 0),
+            "role": user.get("role", "user"),
+            "user_id": str(user["_id"]),
+        }
+    }
 
 
+# Get current user
 def get_current_user(token: str = Depends(oauth2_scheme), db: Database = Depends(get_db)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -123,7 +134,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Database = Depends
             raise HTTPException(status_code=401, detail="User not found")
 
         return {
-            "user_id": str(user["_id"]),  # Add the user_id
+            "user_id": str(user["_id"]),
             "name": user["name"],
             "email": user["email"],
             "age": user.get("age", 0),
@@ -133,7 +144,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Database = Depends
         raise HTTPException(status_code=401, detail="Invalid token")
 
 
-
+# Get current admin
 def get_current_admin(db: Database = Depends(get_db)):
     admin_user = db["Infos"].find_one({"role": "admin"})
     if not admin_user:
@@ -147,6 +158,8 @@ def get_current_admin(db: Database = Depends(get_db)):
         "role": admin_user.get("role", "admin")
     }
 
+
+# Update user
 @router.put("/update/{user_id}")
 def update_user(user_id: str, update_data: UpdateUserRequest, db: Database = Depends(get_db)):
     if not ObjectId.is_valid(user_id):
@@ -155,8 +168,8 @@ def update_user(user_id: str, update_data: UpdateUserRequest, db: Database = Dep
     update_dict = update_data.dict(exclude_unset=True)
 
     # Hash new password if provided
-    if "password" in update_dict:
-        update_dict["password"] = bcrypt_context.hash(update_dict["password"])
+    if update_dict.get("password"):
+        update_dict["password"] = hash_password(update_dict["password"])
 
     result = db["Infos"].update_one(
         {"_id": ObjectId(user_id)},
@@ -169,22 +182,22 @@ def update_user(user_id: str, update_data: UpdateUserRequest, db: Database = Dep
     return {"message": "User updated successfully"}
 
 
+# Admin login
 class AdminLogin(BaseModel):
     email: str
     password: str
 
 
 @router.post("/login-admin")
-async def login_admin(credentials: AdminLogin, db: Database = Depends(get_db)):
+def login_admin(credentials: AdminLogin, db: Database = Depends(get_db)):
     admin = db["Infos"].find_one({"email": credentials.email, "role": "admin"})
-
     if not admin:
         raise HTTPException(status_code=404, detail="Admin not found")
 
     if not bcrypt_context.verify(credentials.password, admin["password"]):
         raise HTTPException(status_code=401, detail="Incorrect password")
 
-    token = create_access_token({"sub": admin["email"], "role": "admin"})
+    token = create_access_token(admin["email"])
 
     return {
         "access_token": token,
@@ -193,20 +206,23 @@ async def login_admin(credentials: AdminLogin, db: Database = Depends(get_db)):
             "name": admin["name"],
             "email": admin["email"],
             "role": admin["role"],
-            "user_id": str(admin["_id"])  # Convert ObjectId to string
+            "user_id": str(admin["_id"]),
         }
     }
 
 
+# Dependency short forms
 user_dependency = Annotated[dict, Depends(get_current_user)]
 admin_dependency = Annotated[dict, Depends(get_current_admin)]
 
-@router.get("/auth/me", status_code=status.HTTP_200_OK)
+
+# Current user route
+@router.get("/me", status_code=status.HTTP_200_OK)
 def get_current_user_info(user: user_dependency):
     return {"user": user}
 
 
-@router.get("/auth/admin", status_code=status.HTTP_200_OK)
+# Current admin route
+@router.get("/admin", status_code=status.HTTP_200_OK)
 def get_current_admin_info(user: admin_dependency):
     return {"user": user}
-

@@ -1,9 +1,10 @@
 from fastapi import APIRouter, HTTPException, status, Depends
 from pymongo.database import Database
-from models.order_model import Order, OrderResponse
+from models.order_model import Order, OrderResponse, OrderInDB, OrderCreate
 from typing import List
 from bson import ObjectId
 from db import get_db
+import datetime
 
 router = APIRouter(
     prefix="/orders",
@@ -65,7 +66,7 @@ async def delete_order(order_id: str, db: Database = Depends(get_db)):
     return None
 
 
-@router.get("/orders/seller/{seller_id}", response_model=List[OrderResponse])
+@router.get("/seller/{seller_id}", response_model=List[OrderResponse])
 async def get_orders_by_seller(seller_id: str, db: Database = Depends(get_db)):
     orders = list(db["orders"].find({"sellerId": seller_id}))
     if not orders:
@@ -74,3 +75,40 @@ async def get_orders_by_seller(seller_id: str, db: Database = Depends(get_db)):
         order["id"] = str(order["_id"])  
         del order["_id"]  
     return [OrderResponse(**order) for order in orders]
+
+
+
+@router.post("/ord/", response_model=OrderInDB)
+async def create_order(order: OrderCreate, db:Database = Depends(get_db)):
+    # 1) Read the cart to verify it exists & is not empty
+    cart = await db["carts"].find_one({"user_id": ObjectId(order.user_id)})
+    if not cart or not cart.get("items"):
+        raise HTTPException(400, "Cart is empty")
+
+    # 2) Build order document
+    doc = order.dict()
+    doc["status"] = "pending"
+    doc["created_at"] = datetime.utcnow()
+
+    # 3) Insert order
+    result = await db["orders"].insert_one({
+        **doc,
+        "user_id": ObjectId(order.user_id),
+        "seller_id": ObjectId(order.seller_id),
+        "items": [
+            {
+                "product_id": ObjectId(i.product_id),
+                "quantity": i.quantity,
+                "seller_id": ObjectId(i.seller_id)
+            }
+            for i in order.items
+        ]
+    })
+
+    # 4) Clear the cart
+    await db["carts"].delete_one({"user_id": ObjectId(order.user_id)})
+
+    # 5) Prepare response
+    created = await db["orders"].find_one({"_id": result.inserted_id})
+    created["_id"] = created.pop("_id")
+    return created

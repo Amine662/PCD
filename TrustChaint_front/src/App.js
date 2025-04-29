@@ -48,7 +48,7 @@ import SellerDashboard from './component/home/SellerDashboard';
           <Route path="/seller/manage-products" element={<ManageProducts />} />          
           <Route path="/admin/manage-orders" element={<ManageOrders />} />          
           <Route path="/seller/manage-orders" element={<ManageOrders />} />          
-          <Route path="/seller-dashboard" element={<SellerDashboard />} />          
+          <Route path="/seller-dashboard" element={<SellerDashboard />} />         
 
 
         </Routes>

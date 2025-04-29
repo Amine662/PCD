@@ -155,7 +155,7 @@ const Navbar = () => {
                       fontWeight: "bold",
                     }}
                   >
-                    {cartItems.length}
+                    {/*cartItems.length*/}
                   </span>
                   <p className="mb-0 small">My cart</p>
                 </div>

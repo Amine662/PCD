@@ -42,6 +42,7 @@ const LoginUser = () => {
       });
       localStorage.setItem("user",res.data.user.name);
       localStorage.setItem("token", res.data.access_token);
+      localStorage.setItem("user_id", res.data.user.user_id);
       navigate("/home");
     } catch (err) {
       console.error(err);

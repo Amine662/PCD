@@ -27,3 +27,16 @@ class ProductUpdate(BaseModel):
     quantity: Optional[int]
     image_url: Optional[str]
     category: Optional[str]
+
+
+class ProductResponse(BaseModel):
+    id: str
+    name: str
+    description: str
+    price: float
+    category: str
+    image: Optional[str] = None  # Optional field
+    seller_id: Optional[str] = None  # Optional field
+
+    class Config:
+        orm_mode = True

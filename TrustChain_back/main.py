@@ -7,6 +7,7 @@ from models.errors import APIError, ERROR_STATUS_CODES
 import uvicorn
 import auth
 from routers.product_router import router as prod
+from routers.cart_router import router as cart_router
 
 app = FastAPI(debug=True)
 app.title = "TrustChain API"
@@ -14,6 +15,7 @@ app.include_router(auth.router)
 app.include_router(prod)
 app.include_router(users_router)
 app.include_router(order_router)
+app.include_router(cart_router)
 
 @app.middleware("http")
 async def error_handling_middleware(request: Request, call_next):
@@ -36,8 +38,6 @@ async def error_handling_middleware(request: Request, call_next):
                 }
             }
         )
-
-app.include_router(users_router)
 
 if __name__ == "__main__":
     uvicorn.run(
