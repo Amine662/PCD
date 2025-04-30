@@ -2,6 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from pymongo.database import Database
 from bson import ObjectId
+from bson.errors import InvalidId
 from datetime import datetime
 from models.cart_model import CartCreate, CartResponse, CartItem
 from db import get_db
@@ -142,3 +143,33 @@ def delete_cart(user_id: str, db: Database = Depends(get_db)):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Cart not found")
     return
+
+
+@router.delete(
+    "/cart/{user_id}/item/{product_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a specific item from user's cart"
+)
+def delete_cart_item(user_id: str, product_id: str, db: Database = Depends(get_db)):
+    try:
+        user_oid = ObjectId(user_id)
+        product_oid = ObjectId(product_id)
+    except InvalidId:
+        raise HTTPException(status_code=400, detail="Invalid ID format")
+
+    # Check if the product exists in the user's cart
+    cart = db["carts"].find_one({"user_id": user_oid, "items.product_id": product_oid})
+
+    if not cart:
+        raise HTTPException(status_code=404, detail="Item not found in cart")
+
+    # Pull the item
+    result = db["carts"].update_one(
+        {"user_id": user_oid},
+        {"$pull": {"items": {"product_id": product_oid}}}
+    )
+
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Item not found in cart")
+
+    return {"message": "Item removed successfully"}

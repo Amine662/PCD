@@ -6,6 +6,8 @@ import { useCart } from '../../context/CartContext';
 import { MdLocalShipping } from "react-icons/md";
 import { FaShieldAlt, FaBoxOpen } from "react-icons/fa";
 import axios from 'axios';
+import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
 
 const ProductDetail = () => {
   const navigate = useNavigate();
@@ -34,11 +36,27 @@ const ProductDetail = () => {
       user_id: localStorage.getItem('user_id'),
       items: [{
         product_id: product.id,
-      quantity,
-      seller_id: product.seller_id,
+        quantity,
+        seller_id: product.seller_id,
       }]
-    }).then(r=>alert("product added")).catch(err=>console.log(err))
-    
+    })
+    .then(() => {
+      Swal.fire({
+        title: 'Product Added!',
+        text: `${product.name} has been added to your cart.`,
+        icon: 'success',
+        showConfirmButton: false,
+        timer: 1800,
+        toast: true,
+        position: 'top-end',
+        background: '#fff',
+        color: '#1a1a1a',
+        customClass: {
+          popup: 'rounded-4 shadow',
+        },
+      });
+    })
+    .catch(err => console.log(err));
   };
 
   const handleBuyNow = () => {

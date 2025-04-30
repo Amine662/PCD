@@ -25,7 +25,7 @@ const Addtocart = () => {
     (sum, item) => sum + item.product_details.price * item.quantity,
     0
   );
-  const shipping = subtotal > 0 ? 5.0 : 0; // $5 flat shipping if items exist
+  const shipping = subtotal > 0 ? 5.0 : 0;
   const taxRate = 0.07;
   const tax = subtotal * taxRate;
   const total = subtotal + shipping + tax;
@@ -41,7 +41,13 @@ const Addtocart = () => {
               <div className="bg-white rounded shadow-sm p-4">
                 <div className="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
                   <h2 className="h5 fw-semibold mb-0">Shopping Cart</h2>
-                  <button className="btn btn-outline-danger btn-sm" onClick={clearCart}>
+                  <button
+                    className="btn btn-outline-danger btn-sm"
+                    onClick={() => {
+                      clearCart();
+                      setCartDetails({ items: [] });
+                    }}
+                  >
                     <BsTrash size={18} className="me-2" /> Clear
                   </button>
                 </div>
@@ -50,10 +56,16 @@ const Addtocart = () => {
                   <p className="text-muted">Your cart is empty.</p>
                 ) : (
                   cartDetails.items.map((item) => (
-                    <div key={item._id} className="d-flex align-items-center py-3 border-bottom">
+                    <div key={item.product_id} className="d-flex align-items-center py-3 border-bottom">
                       <button
                         className="btn btn-outline-danger btn-sm me-3 d-flex align-items-center justify-content-center"
-                        onClick={() => removeFromCart(item._id)}
+                        onClick={() => {
+                          removeFromCart(item.product_id);
+                          setCartDetails((prev) => ({
+                            ...prev,
+                            items: prev.items.filter((i) => i.product_id !== item.product_id),
+                          }));
+                        }}
                         style={{ width: '36px', height: '36px' }}
                       >
                         <BsTrash size={18} />
@@ -64,6 +76,7 @@ const Addtocart = () => {
                           src={item.product_details.image_url}
                           className="img-thumbnail"
                           style={{ width: '80px', height: '80px', objectFit: 'cover' }}
+                          alt={item.product_details.name}
                         />
                       </div>
 
@@ -73,7 +86,9 @@ const Addtocart = () => {
                         <p className="mb-0 text-muted">${item.product_details.price}</p>
                       </div>
 
-                      <div className="mx-3"><span>{item.quantity}</span></div>
+                      <div className="mx-3">
+                        <span>{item.quantity}</span>
+                      </div>
 
                       <div className="text-end me-3" style={{ width: '100px' }}>
                         <strong>${(item.product_details.price * item.quantity).toFixed(2)}</strong>

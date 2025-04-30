@@ -61,15 +61,36 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-  const removeFromCart = (productId) => {
-    setItems(prev => prev.filter(item => item.product !== productId));
-    console.log('Removed from cart:', productId);
+
+  const removeFromCart = async (productId) => {
+    try {
+      const userId = localStorage.getItem('user_id');
+      console.log("Removing item with product_id:", productId);  // log for debugging
+  
+      await axios.delete(`http://localhost:8001/cart/cart/${userId}/item/${productId}`);
+      
+      setItems(prev =>
+        prev.filter(item => item.product_id !== productId)
+      );
+  
+    } catch (err) {
+      console.error('Error removing item from cart:', err);
+    }
   };
   
-  const clearCart = () => {
-    setItems([]);
-  };
+  
+  
 
+  const clearCart = async () => {
+    try {
+      const userId = localStorage.getItem('user_id');
+      await axios.delete(`http://localhost:8001/cart/${userId}`);
+      setItems([]);
+      console.log('Cart cleared for user:', userId);
+    } catch (err) {
+      console.error('Error clearing cart:', err);
+    }
+  };
   return (
     <CartContext.Provider
       value={{
