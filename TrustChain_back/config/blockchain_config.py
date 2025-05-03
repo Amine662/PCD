@@ -1,3 +1,4 @@
+# import json
 # from web3 import Web3
 # from eth_account import Account
 # import os
@@ -12,22 +13,13 @@
 # # Initialize Web3
 # web3 = Web3(Web3.HTTPProvider(BLOCKCHAIN_PROVIDER_URL))
 
-# def create_wallet():
-#     """Create a new Ethereum wallet"""
-#     account = Account.create()
-#     return {
-#         "address": account.address,
-#         "private_key": account._private_key.hex()
-#     }
+# def load_contract_info(contract_name: str):
+#     with open(f'./abis/{contract_name}.json') as f:
+#         contract_info = json.load(f)
+#         abi = contract_info['abi']
+#         address = contract_info['networks'][str(CHAIN_ID)]['address']
+#         return abi, address
 
-# def get_balance(address: str) -> float:
-#     """Get balance of an Ethereum address"""
-#     try:
-#         balance = web3.eth.get_balance(address)
-#         return web3.from_wei(balance, 'ether')
-#     except Exception as e:
-#         raise Exception(f"Failed to get balance: {str(e)}")
+# TRANSACTION_MANAGEMENT_CONTRACT_ABI, TRANSACTION_MANAGEMENT_CONTRACT_ADDRESS = load_contract_info('TransactionManagement')
 
-# def is_connected() -> bool:
-#     """Check if connected to Ethereum network"""
-#     return web3.is_connected()
+# USER_MANAGEMENT_CONTRACT_ABI, USER_MANAGEMENT_CONTRACT_ADDRESS = load_contract_info('UserManagement')

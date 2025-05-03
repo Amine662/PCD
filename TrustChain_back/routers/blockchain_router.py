@@ -6,65 +6,42 @@
 # router = APIRouter(prefix="/blockchain", tags=["blockchain"])
 # blockchain_service = BlockchainService()
 
-# @router.get("/test")
-# async def test_blockchain_connection() -> Dict[str, Any]:
-#     """Test the connection to Ganache and get network information"""
+# @router.post("/register-seller")
+# async def register_seller(private_key: str):
 #     try:
-#         return await blockchain_service.test_connection()
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
-
-# @router.post("/wallet", response_model=Wallet)
-# async def create_wallet():
-#     """Create a new Ethereum wallet"""
-#     try:
-#         return await blockchain_service.create_wallet()
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
-
-# @router.get("/balance/{address}", response_model=Dict[str, float])
-# async def get_balance(address: str):
-#     """Get wallet balance"""
-#     try:
-#         balance = await blockchain_service.get_balance(address)
-#         return {"balance": balance}
+#         tx_hash = await blockchain_service.register_seller(private_key)
+#         return {"tx_hash": tx_hash}
 #     except Exception as e:
 #         raise HTTPException(status_code=400, detail=str(e))
 
-# @router.post("/transaction", response_model=BlockchainTransaction)
-# async def send_transaction(
-#     from_private_key: str,
-#     to_address: str,
-#     amount: float
-# ):
-#     """Send Ethereum transaction"""
+# @router.post("/set-user-role")
+# async def set_user_role(admin_key: str, user_address: str, role: int):
 #     try:
-#         transaction = await blockchain_service.send_transaction(
-#             from_private_key,
-#             to_address,
-#             amount
-#         )
-#         return transaction
+#         tx_hash = await blockchain_service.set_user_role(admin_key, user_address, role)
+#         return {"tx_hash": tx_hash}
 #     except Exception as e:
 #         raise HTTPException(status_code=400, detail=str(e))
 
-# @router.get("/transaction/{tx_hash}", response_model=BlockchainTransaction)
-# async def get_transaction(tx_hash: str):
-#     """Get transaction details"""
+# @router.post("/set-user-name")
+# async def set_user_name(private_key: str, user_address: str, hashed_name: str):
 #     try:
-#         return await blockchain_service.get_transaction(tx_hash)
+#         tx_hash = await blockchain_service.set_user_name(private_key, user_address, bytes.fromhex(hashed_name))
+#         return {"tx_hash": tx_hash}
 #     except Exception as e:
 #         raise HTTPException(status_code=400, detail=str(e))
 
-# @router.get("/status")
-# async def get_blockchain_status():
-#     """Check blockchain connection status"""
+# @router.get("/user-role/{address}")
+# async def get_user_role(address: str):
 #     try:
-#         is_connected = blockchain_service.is_connected()
-#         return {
-#             "status": "connected" if is_connected else "disconnected",
-#             "provider": "Ganache",
-#             "network_id": 5777
-#         }
+#         role = blockchain_service.get_user_role(address)
+#         return {"address": address, "role": role}
 #     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
+#         raise HTTPException(status_code=400, detail=str(e))
+
+# @router.get("/user-name/{address}")
+# async def get_user_name(address: str):
+#     try:
+#         hashed_name = blockchain_service.get_user_name(address)
+#         return {"address": address, "hashed_name": hashed_name.hex()}
+#     except Exception as e:
+#         raise HTTPException(status_code=400, detail=str(e))
