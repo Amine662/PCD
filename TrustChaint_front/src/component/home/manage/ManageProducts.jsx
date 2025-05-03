@@ -20,6 +20,7 @@ const ManageProducts = () => {
     description: '',
     category: ''
   });
+  const [imageFile, setImageFile] = useState(null);
   const [nameFilter, setNameFilter] = useState('');
   const [userRole, setUserRole] = useState(null);
   const [sellerId, setSellerId] = useState(null);
@@ -130,20 +131,49 @@ const ManageProducts = () => {
   const handleAddProduct = async (e) => {
     e.preventDefault();
     try {
-      const newProduct = {
-        ...productData,
-        sellerId: userRole === 'admin' ? adminId : sellerId,  // Use adminId as sellerId for admins
+      let imageUrl = '';
+      const imageData = new FormData();
+      imageData.append('file', imageFile);
+  
+      // Step 1: Upload image to Cloudinary
+      if (imageFile) {
+        const cloudinaryRes = await axios.post(
+          'http://localhost:8001/upload-image',
+          imageData
+        );
+  
+        imageUrl = cloudinaryRes.data.original_url;
+      }
+  
+      // Step 2: Send product data + image URL to your backend
+      const productPayload = {
+        name: productData.name,
+        quantity: productData.quantity,
+        price: productData.price,
+        description: productData.description,
+        category: productData.category,
+        sellerId: userRole === 'admin' ? adminId : sellerId,
+        image_url: imageUrl,
       };
-      console.log("Adding product with data:", newProduct);
-      const res = await axios.post('http://localhost:8001/products', newProduct);
+  
+      const res = await axios.post('http://localhost:8001/products', productPayload);
+  
       setProducts([...products, res.data]);
       setShowAddModal(false);
-      setProductData({ name: '', quantity: '', price: '', description: '', category: '' });
+      setProductData({
+        name: '',
+        quantity: '',
+        price: '',
+        description: '',
+        category: '',
+      });
+      setImageFile(null);
     } catch (err) {
       console.error(err);
       setError('Failed to add product.');
     }
   };
+  
 
   const handleCloseModals = () => {
     setShowViewModal(false);
@@ -239,6 +269,15 @@ const ManageProducts = () => {
         <Modal.Body>
           {selectedProduct && (
             <>
+              <img 
+                  src={selectedProduct.image_url} 
+                  alt={selectedProduct.name} 
+                  style={{ 
+                    width: '50%', 
+                    height: 'auto',
+                    display: 'block',
+                    margin: '0 auto'
+                  }} />
               <p><strong>Name:</strong> {selectedProduct.name}</p>
               <p><strong>Quantity:</strong> {selectedProduct.quantity}</p>
               <p><strong>Price:</strong> {selectedProduct.price}</p>
@@ -292,6 +331,15 @@ const ManageProducts = () => {
         </Modal.Header>
         <Form onSubmit={handleAddProduct}>
           <Modal.Body>
+            <Form.Group className="mb-3">
+              <Form.Label>Image</Form.Label>
+              <Form.Control
+                type="file"
+                accept="image/*"
+                onChange={(e) => setImageFile(e.target.files[0])}
+                required
+              />
+            </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Name</Form.Label>
               <Form.Control type="text" value={productData.name} onChange={(e) => setProductData({ ...productData, name: e.target.value })} required />

@@ -9,6 +9,7 @@ import uvicorn
 import auth
 from routers.product_router import router as prod
 from routers.cart_router import router as cart_router
+from routers.cloudinary import router as cloudinary_router
 
 app = FastAPI(debug=True)
 app.title = "TrustChain API"
@@ -17,6 +18,7 @@ app.include_router(prod)
 app.include_router(users_router)
 app.include_router(order_router)
 app.include_router(cart_router)
+app.include_router(cloudinary_router)
 #app.include_router(blockchain_router)  # Add blockchain router
 
 @app.middleware("http")

@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { IoMdPerson, IoMdMailUnread } from "react-icons/io";
 import { FaKey } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
 const LoginUser = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirect = new URLSearchParams(location.search).get("redirect") || "/home";
+
   const [action, setAction] = useState("Log In");
 
   const [name, setName] = useState("");
@@ -13,7 +16,7 @@ const LoginUser = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const API_URL = "http://localhost:8001/auth/register"; // adjust if needed
+  const API_URL = "http://localhost:8001/auth/register";
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -35,19 +38,22 @@ const LoginUser = () => {
   const handleLogIn = async (e) => {
     e.preventDefault();
     try {
-      // Replace with your backend login endpoint (e.g. /api/login)
       const res = await axios.post("http://localhost:8001/auth/login-json", {
         email,
         password,
       });
-      localStorage.setItem("user",res.data.user.name);
+      localStorage.setItem("user", res.data.user.name);
       localStorage.setItem("token", res.data.access_token);
       localStorage.setItem("user_id", res.data.user.user_id);
-      navigate("/home");
+      navigate(redirect);
     } catch (err) {
       console.error(err);
+      alert("Login failed");
     }
   };
+
+
+
 
   return (
     <div
@@ -103,9 +109,7 @@ const LoginUser = () => {
                 </div>
 
                 <div className="input-group shadow-sm">
-                  <span className="input-group-text bg-white border-end-0">
-                    🎂
-                  </span>
+                  <span className="input-group-text bg-white border-end-0">🎂</span>
                   <input
                     type="number"
                     className="form-control border-start-0"

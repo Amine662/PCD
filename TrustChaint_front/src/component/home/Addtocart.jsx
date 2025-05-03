@@ -131,7 +131,7 @@ const Addtocart = () => {
                 </div>
 
                 <div className="d-grid gap-2">
-                  <Link to="/login?redirect=checkout" className="btn btn-secondary">
+                  <Link to="/login?redirect=check" className="btn btn-secondary">
                     Sign In to Checkout
                   </Link>
                   <Link to="/product" className="btn btn-outline-secondary">

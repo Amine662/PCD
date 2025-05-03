@@ -38,7 +38,7 @@ import SellerDashboard from './component/home/SellerDashboard';
           <Route path="/product" element={<Product />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/addtocart" element={<Addtocart />} />
-          <Route path="/check" element={<CheckoutPage/>} />
+          <Route path="/login/check" element={<CheckoutPage/>} />
           <Route path="/account" element={<Account />} />
           <Route path="/dashboard" element={<AdminDashboard />} />
           <Route path="/dashboard2" element={<DashboardLayout />} />
