@@ -14,6 +14,12 @@ import logo from './logo.png';
 import './CheckoutPage.css';
 import { useNavigate } from 'react-router-dom';
 
+const ETH_USD_PRICE = 3000; // 1 ETH = $3,000
+function usdToWei(usd) {
+    const eth = usd / ETH_USD_PRICE;
+    return Math.round(eth * 1e18);
+}
+
 const CheckoutPage = () => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
@@ -61,7 +67,7 @@ const CheckoutPage = () => {
         setLoading(true);
         try {
             const productId = 1; // Example productId
-            const value = Math.round(total * 1e18); // Convert ETH to Wei (assuming 1 ETH = 1e18 Wei)
+            const value = usdToWei(total); // Convert USD total to Wei
             const response = await fetch('http://localhost:8001/blockchain/buy_product', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
