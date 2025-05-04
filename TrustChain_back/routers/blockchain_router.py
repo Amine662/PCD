@@ -1,47 +1,56 @@
-# from fastapi import APIRouter, HTTPException
-# from services.blockchain_service import BlockchainService
-# from models.blockchain_models import BlockchainTransaction, Wallet
-# from typing import Dict, Any
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+from TrustChain_back.services.blockchain_service import
 
-# router = APIRouter(prefix="/blockchain", tags=["blockchain"])
-# blockchain_service = BlockchainService()
+router = APIRouter(prefix="/blockchain", tags=["blockchain"])
 
-# @router.post("/register-seller")
-# async def register_seller(private_key: str):
-#     try:
-#         tx_hash = await blockchain_service.register_seller(private_key)
-#         return {"tx_hash": tx_hash}
-#     except Exception as e:
-#         raise HTTPException(status_code=400, detail=str(e))
+class AddProductRequest(BaseModel):
+    name: str
+    description: str
+    price: int  # in Wei
+    quantity: int
+    seller_private_key: str
 
-# @router.post("/set-user-role")
-# async def set_user_role(admin_key: str, user_address: str, role: int):
-#     try:
-#         tx_hash = await blockchain_service.set_user_role(admin_key, user_address, role)
-#         return {"tx_hash": tx_hash}
-#     except Exception as e:
-#         raise HTTPException(status_code=400, detail=str(e))
+class UpdateProductRequest(BaseModel):
+    product_id: int
+    name: str
+    description: str
+    price: int
+    quantity: int
+    available: bool
+    seller_private_key: str
 
-# @router.post("/set-user-name")
-# async def set_user_name(private_key: str, user_address: str, hashed_name: str):
-#     try:
-#         tx_hash = await blockchain_service.set_user_name(private_key, user_address, bytes.fromhex(hashed_name))
-#         return {"tx_hash": tx_hash}
-#     except Exception as e:
-#         raise HTTPException(status_code=400, detail=str(e))
+class BuyProductRequest(BaseModel):
+    product_id: int
+    buyer_private_key: str
+    value: int  # in Wei
 
-# @router.get("/user-role/{address}")
-# async def get_user_role(address: str):
-#     try:
-#         role = blockchain_service.get_user_role(address)
-#         return {"address": address, "role": role}
-#     except Exception as e:
-#         raise HTTPException(status_code=400, detail=str(e))
+@router.post("/add_product")
+def add_product(req: AddProductRequest):
+    try:
+        tx_hash = blockchain_service.add_product(
+            req.name, req.description, req.price, req.quantity, req.seller_private_key
+        )
+        return {"tx_hash": tx_hash}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-# @router.get("/user-name/{address}")
-# async def get_user_name(address: str):
-#     try:
-#         hashed_name = blockchain_service.get_user_name(address)
-#         return {"address": address, "hashed_name": hashed_name.hex()}
-#     except Exception as e:
-#         raise HTTPException(status_code=400, detail=str(e))
+@router.post("/update_product")
+def update_product(req: UpdateProductRequest):
+    try:
+        tx_hash = blockchain_service.update_product(
+            req.product_id, req.name, req.description, req.price, req.quantity, req.available, req.seller_private_key
+        )
+        return {"tx_hash": tx_hash}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/buy_product")
+def buy_product(req: BuyProductRequest):
+    try:
+        tx_hash = blockchain_service.buy_product(
+            req.product_id, req.buyer_private_key, req.value
+        )
+        return {"tx_hash": tx_hash}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

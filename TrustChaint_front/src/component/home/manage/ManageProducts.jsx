@@ -25,6 +25,7 @@ const ManageProducts = () => {
   const [userRole, setUserRole] = useState(null);
   const [sellerId, setSellerId] = useState(null);
   const [adminId, setAdminId] = useState(null);
+  const [ganachePrivateKey, setGanachePrivateKey] = useState('');
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -145,7 +146,20 @@ const ManageProducts = () => {
         imageUrl = cloudinaryRes.data.original_url;
       }
   
-      // Step 2: Send product data + image URL to your backend
+      // Step 2: Add product to blockchain
+      const blockchainPayload = {
+        name: productData.name,
+        description: productData.description,
+        price: parseInt(productData.price), // Ensure integer (Wei)
+        quantity: parseInt(productData.quantity),
+        seller_private_key: ganachePrivateKey
+      };
+      const blockchainRes = await axios.post('http://localhost:8001/blockchain/add_product', blockchainPayload);
+      if (!blockchainRes.data.tx_hash) {
+        throw new Error('Blockchain transaction failed');
+      }
+  
+      // Step 3: Add product to DB
       const productPayload = {
         name: productData.name,
         quantity: productData.quantity,
@@ -155,9 +169,7 @@ const ManageProducts = () => {
         sellerId: userRole === 'admin' ? adminId : sellerId,
         image_url: imageUrl,
       };
-  
       const res = await axios.post('http://localhost:8001/products', productPayload);
-  
       setProducts([...products, res.data]);
       setShowAddModal(false);
       setProductData({
@@ -168,9 +180,10 @@ const ManageProducts = () => {
         category: '',
       });
       setImageFile(null);
+      setGanachePrivateKey('');
     } catch (err) {
       console.error(err);
-      setError('Failed to add product.');
+      setError('Failed to add product. ' + (err.response?.data?.detail || err.message));
     }
   };
   
@@ -359,6 +372,19 @@ const ManageProducts = () => {
             <Form.Group className="mb-3">
               <Form.Label>Category</Form.Label>
               <Form.Control type="text" value={productData.category} onChange={(e) => setProductData({ ...productData, category: e.target.value })} />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Ganache Private Key</Form.Label>
+              <Form.Control
+                type="password"
+                value={ganachePrivateKey}
+                onChange={(e) => setGanachePrivateKey(e.target.value)}
+                placeholder="Paste your Ganache private key here"
+                required
+              />
+              <Form.Text className="text-muted">
+                This is only for local testing. Never use a real wallet key here!
+              </Form.Text>
             </Form.Group>
           </Modal.Body>
           <Modal.Footer>
