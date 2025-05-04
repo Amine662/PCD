@@ -73,7 +73,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -86,7 +87,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -125,7 +127,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -138,7 +141,8 @@
       "name": "createTransaction",
       "outputs": [],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [
@@ -195,7 +199,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.8.21+commit.d9974bed\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_productManagementAddress\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"transactionId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"productId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"buyer\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"TransactionCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"transactionId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"enum TransactionManagement.TransactionStatus\",\"name\":\"newStatus\",\"type\":\"uint8\"}],\"name\":\"TransactionStatusUpdated\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_productId\",\"type\":\"uint256\"}],\"name\":\"createTransaction\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_transactionId\",\"type\":\"uint256\"}],\"name\":\"getTransaction\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"productId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"buyer\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"},{\"internalType\":\"enum TransactionManagement.TransactionStatus\",\"name\":\"status\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"productManagement\",\"outputs\":[{\"internalType\":\"contract ProductManagement\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"transactionCount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"transactions\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"productId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"buyer\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"},{\"internalType\":\"enum TransactionManagement.TransactionStatus\",\"name\":\"status\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_transactionId\",\"type\":\"uint256\"},{\"internalType\":\"enum TransactionManagement.TransactionStatus\",\"name\":\"_newStatus\",\"type\":\"uint8\"}],\"name\":\"updateTransactionStatus\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/TransactionManagement.sol\":\"TransactionManagement\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/ProductManagement.sol\":{\"keccak256\":\"0xe3658bd31daa3c860d7d6c5988cc4f0574631da8c06be690de145af2bad41e95\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b96b308842b10a7a3ff91865fa9a90389c2795d5192528d64da20ce3b2a5ccfe\",\"dweb:/ipfs/QmbJkjpjYtGtjSb3C3ZB7YNe1UhDpwvow8FX5e5sY8RHgU\"]},\"project:/contracts/SafeTransferLib.sol\":{\"keccak256\":\"0xf13fa9f128e3b7416fb5222af7245ce473228ea6cbecb6875382c9a83763e1b7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://4d10b23b0ed193dd3b9e8c0c2ba0d53982a37f4f26231ff711c867d9911a3dd7\",\"dweb:/ipfs/QmPSisohsXVrQhWC7KZx7s2c11Ui169jhRprWXWQv4V16E\"]},\"project:/contracts/TransactionManagement.sol\":{\"keccak256\":\"0x7a973d6da8a74634451868cd82673e16b1c5a099212442ca48be355123f410ff\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f649cf0929a2afb6540310955b7ef76d59fca45a295041d53697307ca986d8c1\",\"dweb:/ipfs/QmYGyxVRCkaeU9AbxQGZRcsGHaoX9KQoMr252UBNBAhjkj\"]}},\"version\":1}",
@@ -13160,10 +13165,17 @@
       "links": {},
       "address": "0x5C490364f25aC89F03dA73E3fbEfA73591E61f19",
       "transactionHash": "0xef4a134b0a192c6fcf2fb98f09fd3adda8194bf8a70f326a21dca7e6a83a4c97"
+    },
+    "6342": {
+      "events": {},
+      "links": {},
+      "address": "0x5691137a1BcC5AD645F702F181F42FeB83BB3a5C",
+      "transactionHash": "0xb29bfece6569f15390dc71fca96e1553d8c856f580d818d367aa8ebaae9a6db5"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2025-05-03T09:01:15.485Z",
+  "updatedAt": "2025-05-04T08:46:53.474Z",
+  "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
     "methods": {},
