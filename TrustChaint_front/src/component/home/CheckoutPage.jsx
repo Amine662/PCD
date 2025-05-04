@@ -28,10 +28,6 @@ const CheckoutPage = () => {
         country: 'US',
     });
     const [paymentInfo, setPaymentInfo] = useState({
-        cardNumber: '',
-        cardholderName: '',
-        expiryDate: '',
-        cvc: '',
         ganachePrivateKey: '',
     });
     const [promoCode, setPromoCode] = useState('');
@@ -148,39 +144,6 @@ const CheckoutPage = () => {
                                 </Card.Header>
                                 <Card.Body>
                                     <Form onSubmit={handlePaymentSubmit}>
-                                        <Form.Group controlId="cardNumber" className="mb-3">
-                                            <Form.Label>Card Number</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                value={paymentInfo.cardNumber}
-                                                onChange={(e) => setPaymentInfo({ ...paymentInfo, cardNumber: e.target.value })}
-                                            />
-                                        </Form.Group>
-                                        <Form.Group controlId="cardholderName" className="mb-3">
-                                            <Form.Label>Cardholder Name</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                value={paymentInfo.cardholderName}
-                                                onChange={(e) => setPaymentInfo({ ...paymentInfo, cardholderName: e.target.value })}
-                                            />
-                                        </Form.Group>
-                                        <Form.Group controlId="expiryDate" className="mb-3">
-                                            <Form.Label>Expiry Date</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                placeholder="MM/YY"
-                                                value={paymentInfo.expiryDate}
-                                                onChange={(e) => setPaymentInfo({ ...paymentInfo, expiryDate: e.target.value })}
-                                            />
-                                        </Form.Group>
-                                        <Form.Group controlId="cvc" className="mb-3">
-                                            <Form.Label>CVC</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                value={paymentInfo.cvc}
-                                                onChange={(e) => setPaymentInfo({ ...paymentInfo, cvc: e.target.value })}
-                                            />
-                                        </Form.Group>
                                         <Form.Group controlId="ganachePrivateKey" className="mb-3">
                                             <Form.Label>Ganache Private Key</Form.Label>
                                             <Form.Control

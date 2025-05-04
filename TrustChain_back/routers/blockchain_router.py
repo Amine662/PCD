@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from TrustChain_back.services.blockchain_service import
+import models.blockchain_service as blockchain_service
 
 router = APIRouter(prefix="/blockchain", tags=["blockchain"])
 

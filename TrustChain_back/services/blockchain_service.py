@@ -35,7 +35,7 @@
 #             'nonce': nonce
 #         })
 #         signed_txn = self.web3.eth.account.sign_transaction(transaction, private_key)
-#         tx_hash = self.web3.eth.send_raw_transaction(signed_txn.rawTransaction)
+#         tx_hash = self.web3.eth.send_raw_transaction(signed_txn.raw_transaction)
 #         return self.web3.to_hex(tx_hash)
 
 #     async def create_transaction(self, private_key: str, product_id: int, amount: int) -> str:
