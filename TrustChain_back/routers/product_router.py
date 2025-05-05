@@ -104,8 +104,8 @@ async def get_product_by_id(product_id: str, db: Database = Depends(get_db)):
         del product["_id"]  # Remove the '_id' field
         
         # Ensure 'image' and 'seller_id' are included, default to empty string if missing
-        if 'image' not in product:
-            product['image'] = ''
+        if 'image_url' not in product:
+            product['image_url'] = ''
         if 'sellerId' in product:
             product['seller_id'] = product.pop('sellerId')  # Rename sellerId to seller_id
 

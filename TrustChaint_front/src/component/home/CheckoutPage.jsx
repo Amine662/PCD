@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios'; 
 import {
     Container,
     Row,
@@ -39,15 +40,7 @@ const CheckoutPage = () => {
     const [promoCode, setPromoCode] = useState('');
     const [promoApplied, setPromoApplied] = useState(false);
     const [loading, setLoading] = useState(false);
-    const cartItems = [
-        { id: 1, name: 'Wireless Headphones', price: 129.99, quantity: 1 },
-        { id: 2, name: 'Smart Watch', price: 249.99, quantity: 1 },
-    ];
-    const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
-    const shipping = 9.99;
-    const tax = subtotal * 0.08;
-    const discount = promoApplied ? subtotal * 0.2 : 0;
-    const total = subtotal + shipping + tax - discount;
+
 
     const applyPromoCode = () => {
         if (promoCode.toUpperCase() === 'DISCOUNT20') {
@@ -55,6 +48,20 @@ const CheckoutPage = () => {
         } else {
             setPromoApplied(false);
         }
+    };
+
+    const calculateTotal = () => {
+        const storedCart = JSON.parse(localStorage.getItem('finalcart'));
+        if (!storedCart || !storedCart.items) return 0;
+    
+        const subtotal = storedCart.items.reduce((total, item) => {
+            const price = item.product_details?.price || 0;
+            return total + (price * item.quantity);
+        }, 0);
+    
+        const shipping = 0;
+        const tax = subtotal * 0.07;
+        return subtotal + shipping + tax;
     };
 
     const handleShippingSubmit = (e) => {
@@ -65,30 +72,72 @@ const CheckoutPage = () => {
     const handlePaymentSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+    
         try {
-            const productId = 1; // Example productId
-            const value = usdToWei(total); // Convert USD total to Wei
-            const response = await fetch('http://localhost:8001/blockchain/buy_product', {
+            // 1. Load cart from localStorage
+            const storedCart = JSON.parse(localStorage.getItem('finalcart'));
+            if (!storedCart?.items?.length) {
+                alert("Cart is empty or invalid.");
+                setLoading(false);
+                return;
+            }
+    
+            // 2. Prepare orderData
+            const user_email = localStorage.getItem('user_email');
+            const sellerId = storedCart.items[0].seller_id;
+            const items = storedCart.items.map(item => ({
+                product_name: item.product_details?.name || "Unnamed",
+                quantity: item.quantity
+            }));
+            const total_price = calculateTotal();
+    
+            const orderData = {
+                user_email,
+                items,
+                sellerId,
+                total_price,
+                status: "Pending",
+                created_at: new Date().toISOString()
+            };
+    
+            console.log("Prepared orderData:", orderData);
+    
+            // 3. Post order to backend
+            const orderResponse = await axios.post('http://localhost:8001/orders', orderData);
+            console.log('Order created:', orderResponse.data);
+            const orderId = orderResponse.data.id || orderResponse.data._id;
+            localStorage.setItem('current_order_id', orderId);
+    
+            // 4. Perform blockchain transaction
+            const productId = 1; // Example productId — consider dynamic mapping in the future
+            const value = usdToWei(total_price); // Convert USD to Wei
+    
+            const blockchainResponse = await fetch('http://localhost:8001/blockchain/buy_product', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     product_id: productId,
                     buyer_private_key: paymentInfo.ganachePrivateKey,
-                    value: value
+                    value: total_price
                 })
             });
-            const data = await response.json();
-            if (response.ok) {
-                setStep(3);
-            } else {
-                alert('Transaction failed! ' + (data.detail || ''));
+    
+            const blockchainData = await blockchainResponse.json();
+            if (!blockchainResponse.ok) {
+                alert('Transaction failed! ' + (blockchainData.detail || ''));
+                setLoading(false);
+                return;
             }
+    
+            // 5. Advance to confirmation step
+            setStep(3);
         } catch (error) {
             alert('Transaction failed! ' + error.message);
         }
+    
         setLoading(false);
     };
-
+    
     return (
         <div className="checkout-page-bg">
             <Container className="py-5">

@@ -15,7 +15,7 @@ const Addtocart = () => {
       .get('http://localhost:8001/cart/' + localStorage.getItem('user_id'))
       .then((r) => {
         setCartDetails(r.data);
-        console.log("Cart Data:", r.data);
+        localStorage.setItem("final cart", JSON.stringify(r.data));
       })
       .catch((err) => console.log(err));
   }, []);

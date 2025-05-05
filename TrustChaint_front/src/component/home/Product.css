@@ -1,15 +1,20 @@
+.product-card {
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
 
-.card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-  }
-  
-  /* Hover effect */
-  .card:hover {
-    transform: translateY(-5px); /* Lift the card on hover */
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* More intense shadow on hover */
-  }
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.object-fit-cover {
+  object-fit: cover;
+}
+
+.hover-shadow:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
+}
 
   
   

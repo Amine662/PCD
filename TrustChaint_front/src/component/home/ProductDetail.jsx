@@ -71,7 +71,7 @@ const ProductDetail = () => {
         {product ? (
           <div className="row">
             <div className="col-md-6 text-center">
-              <img src={product.image} alt={product.name} className="img-fluid rounded" style={{ maxHeight: '350px', objectFit: 'cover' }} />
+              <img src={product.image_url} alt={product.name} className="img-fluid rounded" style={{ maxHeight: '350px', objectFit: 'cover' }} />
             </div>
             <div className="col-md-6">
               <h2 className="fw-bold">{product.name}</h2>
