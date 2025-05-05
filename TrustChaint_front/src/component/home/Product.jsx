@@ -1,64 +1,81 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './Product.css';
 import Footer from './Footer';
 import Navbar from './Navbar';
+import { PlusCircle } from 'lucide-react';
 
 const Product = () => {
   const navigate = useNavigate();
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get('http://localhost:8001/products');
+        setProducts(response.data);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const handleProductClick = (id) => {
-    navigate(`/product/${id}`);  // Navigate to product details page
+    navigate(`/product/${id}`);
   };
 
   return (
-    <div><Navbar />
-    <div className="bg-light py-5">
-      <div className="container">
-        <h1 className="display-4 font-weight-bold text-dark mb-4">All Products</h1>
-        <div className="d-flex flex-column flex-md-row gap-4">
-          <div className="flex-grow-1">
-            <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-              {[...Array(12)].map((_, index) => {
-                const productId = index + 1; // Simulating unique product IDs
-
-                return (
-                  <div className="col" key={productId}>
-                    <div className="card shadow-sm rounded-lg overflow-hidden">
+    <div>
+      <Navbar />
+      <div className="bg-light py-5">
+        <div className="container">
+          <h1 className="display-4 font-weight-bold text-dark mb-4">All Products</h1>
+          <div className="d-flex flex-column flex-md-row gap-4">
+            <div className="flex-grow-1">
+              <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+                {products.map(product => (
+                  <div className="col" key={product._id}>
+                    <div className="card shadow rounded-4 border-0 h-100 product-card hover-shadow">
                       <div className="position-relative" style={{ paddingBottom: '100%' }}>
                         <img
-                          src="https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
-                          alt="Product"
-                          className="position-absolute inset-0 w-100 h-100 object-cover object-center"
-                          onClick={() => handleProductClick(productId)} // On click, navigate to product detail
+                          src={product.image_url || "https://via.placeholder.com/300"}
+                          alt={product.name}
+                          className="position-absolute top-0 start-0 w-100 h-100 object-fit-cover cursor-pointer"
+                          onClick={() => handleProductClick(product.id)}
+                          style={{ borderTopLeftRadius: '1rem', borderTopRightRadius: '1rem' }}
                         />
                       </div>
-                      <div className="p-4">
-                        <h3 className="h5 font-weight-medium text-dark mb-1">{`Product ${productId}`}</h3>
-                        <div className="d-flex justify-content-between">
-                          <span className="h4 font-weight-semibold text-dark">$299.99</span>
+                      <div className="p-3 d-flex flex-column justify-content-between" style={{ minHeight: '150px' }}>
+                        <div>
+                          <h5 className="fw-semibold text-dark mb-1">{product.name}</h5>
+                          <p className="text-muted small mb-2">{product.description?.slice(0, 50) || 'Great quality product.'}</p>
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <span className="h5 text-dark mb-0">${product.price}</span>
                           <button
-                            className="btn btn-primary rounded-circle p-1"
-                            onClick={() => handleProductClick(productId)} // Navigate to product detail
+                            className="btn p-0 border-0 text-warning"
+                            onClick={() => handleProductClick(product._id)}
+                            title="View Product"
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-shopping-cart">
-                              <circle cx="8" cy="21" r="1"></circle>
-                              <circle cx="19" cy="21" r="1"></circle>
-                              <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path>
-                            </svg>
+                            <PlusCircle size={24} strokeWidth={2.2} />
                           </button>
                         </div>
                       </div>
                     </div>
                   </div>
-                );
-              })}
+                ))}
+                {products.length === 0 && (
+                  <div className="text-muted">No products available.</div>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <Footer />
+      <Footer />
     </div>
   );
 };

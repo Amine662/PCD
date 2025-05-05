@@ -35,7 +35,7 @@ class ProductResponse(BaseModel):
     description: str
     price: float
     category: str
-    image: Optional[str] = None  # Optional field
+    image_url: Optional[str] = None  # Optional field
     seller_id: Optional[str] = None  # Optional field
 
     class Config:

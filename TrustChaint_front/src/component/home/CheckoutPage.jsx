@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios'; 
 import {
     Container,
     Row,
@@ -14,13 +15,14 @@ import { useNavigate } from 'react-router-dom';
 import { ethers } from "ethers";
 import TransactionManagementJSON from "../TransactionManagement.json";
 
-const ETH_USD_PRICE = 3000;
-const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS
-// console.log("contract ", process.env.REACT_APP_CONTRACT_ADDRESS)
+const ETH_USD_PRICE = 1817.82;
+
+const CONTRACT_ADDRESS = process.env.REACT_APP_TRANSACTION_CONTRACT_ADDRESS;
 
 function usdToWei(usd) {
     const eth = usd / ETH_USD_PRICE;
-    return ethers.parseEther(eth.toString());
+    const trimmedEth = eth.toFixed(18); // ensures it doesn't exceed 18 decimals
+    return ethers.parseEther(trimmedEth);
 }
 
 const CheckoutPage = () => {
@@ -111,48 +113,130 @@ const CheckoutPage = () => {
 
     const handlePaymentSubmit = async (e) => {
         e.preventDefault();
-        
+      
+        // 1. Pre-checks
         if (!walletAddress) {
-            alert("Please connect your wallet first!");
-            return;
+          alert("Please connect your wallet first!");
+          return;
         }
-
         if (!transactionManagementContract) {
-            alert("Contract not initialized!");
-            return;
+          alert("Contract not initialized!");
+          return;
         }
-
+      
+        setLoading(true);
         try {
-            setLoading(true);
-            const value = usdToWei(calculateTotal());
-            const tx = await transactionManagementContract.createTransaction(1, {
-                value: value,
-                gasLimit: 1000000
-            });
-            
-            console.log("Transaction sent:", tx.hash);
-            await tx.wait();
-            setStep(3);
+          // 2. Load cart from localStorage
+          const storedCart = JSON.parse(localStorage.getItem('finalcart'));
+          if (!storedCart?.items?.length) {
+            alert("Cart is empty or invalid.");
+            return;
+          }
+      
+          // 3. Build orderData
+          const user_email = localStorage.getItem('user_email');
+          const sellerId = storedCart.items[0].seller_id;
+          const items = storedCart.items.map(item => ({
+            product_name: item.product_details?.name || "Unnamed",
+            quantity: item.quantity
+          }));
+          const total_price = calculateTotal().toFixed(2);
+      
+          const orderData = {
+            user_email,
+            items,
+            sellerId,
+            total_price,
+            status: "Pending",
+            created_at: new Date().toISOString()
+          };
+          console.log("Prepared orderData:", orderData);
+      
+          // 4. Send blockchain transaction
+          const value = usdToWei(total_price);
+          const tx = await transactionManagementContract.createTransaction(1, {
+            value,
+            gasLimit: 1_000_000
+          });
+          console.log("Transaction sent:", tx.hash);
+          await tx.wait();
+          console.log("Transaction confirmed");
+      
+          // 5. Post order to backend
+          const response = await axios.post('http://localhost:8001/orders', orderData);
+          console.log('Order created:', response.data);
+          localStorage.setItem('current_order_id', response.data.id || response.data._id);
+      
+          // 6. Advance to confirmation step
+          setStep(3);
+      
         } catch (error) {
-            console.error("Transaction error:", error);
-            alert(`Payment failed: ${error.shortMessage || error.message}`);
+          console.error('Error during payment/order flow:', error.response?.data || error.message);
+          alert(`Failed: ${error.response?.data?.detail ?? error.message}`);
         } finally {
-            setLoading(false);
+          setLoading(false);
         }
-    };
-
-    // Cart calculation functions
-    const cartItems = [
-        { id: 1, name: 'Wireless Headphones', price: 129.99, quantity: 1 },
-        { id: 2, name: 'Smart Watch', price: 249.99, quantity: 1 },
-    ];
-
+      };
+      
     const calculateTotal = () => {
-        const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
-        const shipping = 9.99;
-        const tax = subtotal * 0.08;
+        const storedCart = JSON.parse(localStorage.getItem('finalcart'));
+        if (!storedCart || !storedCart.items) return 0;
+    
+        const subtotal = storedCart.items.reduce((total, item) => {
+            const price = item.product_details?.price || 0;
+            return total + (price * item.quantity);
+        }, 0);
+    
+        const shipping = 0;
+        const tax = subtotal * 0.07;
         return subtotal + shipping + tax;
     };
+    
+
+     const handleShippingSubmit = async (e) => {
+       e.preventDefault();
+       setStep(2);
+    //     try {
+    //         const storedCart = JSON.parse(localStorage.getItem('finalcart'));
+    
+    //         if (!storedCart || !storedCart.items || storedCart.items.length === 0) {
+    //             alert("Cart is empty or invalid.");
+    //             return;
+    //         }
+    
+    //         const user_email = localStorage.getItem('user_email');
+    //         const sellerId = storedCart.items[0].seller_id;
+    
+    //         const items = storedCart.items.map(item => ({
+    //             product_name: item.product_details?.name || "Unnamed",
+    //             quantity: item.quantity
+    //         }));
+    
+    //         const total_price = calculateTotal();   
+            
+    
+    //         const orderData = {
+    //             user_email,
+    //             items,
+    //             sellerId,
+    //             total_price,
+    //             status: "Pending",
+    //             created_at: new Date().toISOString()
+    //         };
+    
+    //         console.log("Prepared orderData:", orderData); 
+    
+    //         const response = await axios.post('http://localhost:8001/orders', orderData);
+    //         console.log('Order created:', response.data);
+    
+    //         localStorage.setItem('current_order_id', response.data.id || response.data._id);
+    //         setStep(2);
+    //     } catch (error) {
+    //         console.error('Error creating order:', error.response?.data || error.message);
+    //         alert('Failed to create order. Please try again.');
+    //     }
+};
+    
 
     return (
         <div className="checkout-page-bg">
@@ -174,14 +258,210 @@ const CheckoutPage = () => {
                     <Col lg={8}>
                         {/* Shipping Information Step */}
                         {step === 1 && (
-                            <Card className="mb-4">
+                            <Card className="mb-4 ">
                                 <Card.Header style={{ backgroundColor: '#1a1a1a', color: 'gold' }}>
-                                    Shipping Information
+                                    Shipping & Contact Information
                                 </Card.Header>
                                 <Card.Body>
-                                    <Form onSubmit={(e) => { e.preventDefault(); setStep(2); }}>
-                                        {/* Form fields remain the same */}
-                                        <Button variant="dark" type="submit">Next</Button>
+                                <Form onSubmit={handleShippingSubmit}>
+                                        {/* Contact Information */}
+                                        <h5 className="mb-3">Contact Information</h5>
+                                        <Row>
+                                            <Col md={6}>
+                                                <Form.Group className="mb-3">
+                                                    <Form.Label>Email*</Form.Label>
+                                                    <Form.Control
+                                                        type="email"
+                                                        required
+                                                        value={shippingInfo.email}
+                                                        onChange={(e) => setShippingInfo({
+                                                            ...shippingInfo,
+                                                            email: e.target.value
+                                                        })}
+                                                    />
+                                                </Form.Group>
+                                            </Col>
+                                            <Col md={6}>
+                                                <Form.Group className="mb-3">
+                                                    <Form.Label>Phone Number*</Form.Label>
+                                                    <Form.Control
+                                                        type="tel"
+                                                        required
+                                                        value={shippingInfo.phone}
+                                                        onChange={(e) => setShippingInfo({
+                                                            ...shippingInfo,
+                                                            phone: e.target.value
+                                                        })}
+                                                    />
+                                                </Form.Group>
+                                            </Col>
+                                        </Row>
+
+                                        {/* Shipping Address */}
+                                        <h5 className="mb-3 mt-4">Shipping Address</h5>
+                                        <Row>
+                                            <Col md={6}>
+                                                <Form.Group className="mb-3">
+                                                    <Form.Label>First Name*</Form.Label>
+                                                    <Form.Control
+                                                        type="text"
+                                                        required
+                                                        value={shippingInfo.firstName}
+                                                        onChange={(e) => setShippingInfo({
+                                                            ...shippingInfo,
+                                                            firstName: e.target.value
+                                                        })}
+                                                    />
+                                                </Form.Group>
+                                            </Col>
+                                            <Col md={6}>
+                                                <Form.Group className="mb-3">
+                                                    <Form.Label>Last Name*</Form.Label>
+                                                    <Form.Control
+                                                        type="text"
+                                                        required
+                                                        value={shippingInfo.lastName}
+                                                        onChange={(e) => setShippingInfo({
+                                                            ...shippingInfo,
+                                                            lastName: e.target.value
+                                                        })}
+                                                    />
+                                                </Form.Group>
+                                            </Col>
+                                        </Row>
+
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Street Address*</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                required
+                                                value={shippingInfo.address}
+                                                onChange={(e) => setShippingInfo({
+                                                    ...shippingInfo,
+                                                    address: e.target.value
+                                                })}
+                                            />
+                                        </Form.Group>
+
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Apartment, suite, etc. (optional)</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                value={shippingInfo.addressLine2}
+                                                onChange={(e) => setShippingInfo({
+                                                    ...shippingInfo,
+                                                    addressLine2: e.target.value
+                                                })}
+                                            />
+                                        </Form.Group>
+
+                                        <Row>
+                                            <Col md={6}>
+                                                <Form.Group className="mb-3">
+                                                    <Form.Label>City*</Form.Label>
+                                                    <Form.Control
+                                                        type="text"
+                                                        required
+                                                        value={shippingInfo.city}
+                                                        onChange={(e) => setShippingInfo({
+                                                            ...shippingInfo,
+                                                            city: e.target.value
+                                                        })}
+                                                    />
+                                                </Form.Group>
+                                            </Col>
+                                            <Col md={6}>
+                                                <Form.Group className="mb-3">
+                                                    <Form.Label>State/Province*</Form.Label>
+                                                    <Form.Control
+                                                        type="text"
+                                                        required
+                                                        value={shippingInfo.state}
+                                                        onChange={(e) => setShippingInfo({
+                                                            ...shippingInfo,
+                                                            state: e.target.value
+                                                        })}
+                                                    />
+                                                </Form.Group>
+                                            </Col>
+                                        </Row>
+
+                                        <Row>
+                                            <Col md={6}>
+                                                <Form.Group className="mb-3">
+                                                    <Form.Label>ZIP/Postal Code*</Form.Label>
+                                                    <Form.Control
+                                                        type="text"
+                                                        required
+                                                        value={shippingInfo.zipCode}
+                                                        onChange={(e) => setShippingInfo({
+                                                            ...shippingInfo,
+                                                            zipCode: e.target.value
+                                                        })}
+                                                    />
+                                                </Form.Group>
+                                            </Col>
+                                            <Col md={6}>
+                                                <Form.Group className="mb-3">
+                                                    <Form.Label>Country*</Form.Label>
+                                                    <Form.Select
+                                                        required
+                                                        value={shippingInfo.country}
+                                                        onChange={(e) => setShippingInfo({
+                                                            ...shippingInfo,
+                                                            country: e.target.value
+                                                        })}
+                                                    >
+                                                        <option value="">Select Country</option>
+                                                        <option value="US">United States</option>
+                                                        <option value="CA">Canada</option>
+                                                        <option value="GB">United Kingdom</option>
+                                                        {/* Add more countries as needed */}
+                                                    </Form.Select>
+                                                </Form.Group>
+                                            </Col>
+                                        </Row>
+
+                                        {/* Shipping Method */}
+                                        <h5 className="mb-3 mt-4">Shipping Method</h5>
+                                        <Form.Group className="mb-3">
+                                            <Form.Check
+                                                type="radio"
+                                                name="shippingMethod"
+                                                id="standard"
+                                                label="Standard Shipping (5-7 business days) - Free"
+                                                defaultChecked
+                                            />
+                                            <Form.Check
+                                                type="radio"
+                                                name="shippingMethod"
+                                                id="express"
+                                                label="Express Shipping (2-3 business days) - $15.00"
+                                            />
+                                        </Form.Group>
+
+                                        {/* Special Instructions */}
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Order Notes (Optional)</Form.Label>
+                                            <Form.Control
+                                                as="textarea"
+                                                rows={3}
+                                                placeholder="Special instructions for delivery"
+                                                value={shippingInfo.notes}
+                                                onChange={(e) => setShippingInfo({
+                                                    ...shippingInfo,
+                                                    notes: e.target.value
+                                                })}
+                                            />
+                                        </Form.Group>
+
+                                        <Button 
+                                            variant="dark" 
+                                            type="submit"
+                                            className="mt-3"
+                                        >
+                                            Continue to Payment
+                                        </Button>
                                     </Form>
                                 </Card.Body>
                             </Card>
