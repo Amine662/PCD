@@ -13,12 +13,15 @@ const ManageTransactions = () => {
     setError(null);
     try {
       const userRole = localStorage.getItem('role');
-      if (userRole !== 'admin') {
-        setError('Access denied. Admins only.');
+      const userId = localStorage.getItem('user_id');
+      let url = 'http://localhost:8001/transactions';
+      if (userRole === 'seller' && userId) {
+        url = `http://localhost:8001/transactions/receiver/${userId}`;
+      } else if (userRole !== 'admin') {
+        setError('Access denied. Admins and sellers only.');
         return;
       }
-
-      const res = await axios.get('http://localhost:8001/transactions');
+      const res = await axios.get(url);
       setTransactions(res.data || []);
     } catch (err) {
       console.error('Error fetching transactions:', err);
@@ -31,6 +34,7 @@ const ManageTransactions = () => {
   useEffect(() => {
     fetchTransactions();
   }, []);
+
   console.log("Transactions Length:", transactions.length); 
 
   return (
@@ -64,7 +68,6 @@ const ManageTransactions = () => {
                     <tbody>
                       {transactions.length > 0 ? (
                         transactions.map((tx, idx) => {
-                        
                           console.log('Transaction:', tx);
                           return (
                             <tr key={tx._id}>

@@ -44,6 +44,7 @@ import ManageTransactions from './component/home/manage/ManageTransactions';
           <Route path="/seller/manage-orders" element={<ManageOrders />} />          
           <Route path="/seller-dashboard" element={<SellerDashboard />} />         
           <Route path="/admin/manage-transactions" element={<ManageTransactions />} />         
+          <Route path="/seller/manage-transactions" element={<ManageTransactions />} />         
         </Routes>
       </Router>
     );
