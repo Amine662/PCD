@@ -18,6 +18,7 @@ import ManageUsers from './component/home/manage/ManageUsers';
 import ManageProducts from './component/home/manage/ManageProducts';
 import ManageOrders from './component/home/manage/ManageOrders';
 import SellerDashboard from './component/home/SellerDashboard';
+import ManageTransactions from './component/home/manage/ManageTransactions';
 
   function App() {
     return (
@@ -42,6 +43,7 @@ import SellerDashboard from './component/home/SellerDashboard';
           <Route path="/admin/manage-orders" element={<ManageOrders />} />          
           <Route path="/seller/manage-orders" element={<ManageOrders />} />          
           <Route path="/seller-dashboard" element={<SellerDashboard />} />         
+          <Route path="/admin/manage-transactions" element={<ManageTransactions />} />         
         </Routes>
       </Router>
     );

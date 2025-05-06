@@ -32,6 +32,7 @@ const DashboardLayout = ({ children }) => {
     { path: `${basePath}/manage-users`, label: 'Users' },
     { path: `${basePath}/manage-products`, label: 'Products' },
     { path: `${basePath}/manage-orders`, label: 'Orders' },
+    { path: `${basePath}/manage-transactions`, label: 'Transactions' },
     { path: `${basePath}/profile`, label: 'Profile' }
   ] : role === 'seller' ? [
     { path: `${basePath}-dashboard`, label: 'My Dashboard' },

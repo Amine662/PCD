@@ -101,55 +101,71 @@ const CheckoutPage = () => {
     const handlePaymentSubmit = async (e) => {
         e.preventDefault();
         if (!walletAddress) {
-          alert("Please connect your wallet first!");
-          return;
+            alert("Please connect your wallet first!");
+            return;
         }
         if (!transactionManagementContract) {
-          alert("Contract not initialized!");
-          return;
+            alert("Contract not initialized!");
+            return;
         }
         setLoading(true);
         try {
-          const storedCart = JSON.parse(localStorage.getItem('finalcart'));
-          if (!storedCart?.items?.length) {
-            alert("Cart is empty or invalid.");
-            return;
-          }
-          const user_email = localStorage.getItem('user_email');
-          const sellerId = storedCart.items[0].seller_id;
-          const items = storedCart.items.map(item => ({
-            product_name: item.product_details?.name || "Unnamed",
-            quantity: item.quantity
-          }));
-          const total_price = calculateTotal().toFixed(2);
-          const orderData = {
-            user_email,
-            items,
-            sellerId,
-            total_price,
-            status: "Pending",
-            created_at: new Date().toISOString()
-          };
-          console.log("Prepared orderData:", orderData);
-          const value = usdToWei(total_price);
-          const tx = await transactionManagementContract.createTransaction(1, {
-            value,
-            gasLimit: 1_000_000
-          });
-          console.log("Transaction sent:", tx.hash);
-          await tx.wait();
-          console.log("Transaction confirmed");
-          const response = await axios.post('http://localhost:8001/orders', orderData);
-          console.log('Order created:', response.data);
-          localStorage.setItem('current_order_id', response.data.id || response.data._id);
-          setStep(3);
+            const storedCart = JSON.parse(localStorage.getItem('finalcart'));
+            if (!storedCart?.items?.length) {
+                alert("Cart is empty or invalid.");
+                return;
+            }
+            const user_email = localStorage.getItem('user_email');
+            const sellerId = storedCart.items[0].seller_id;
+            const items = storedCart.items.map(item => ({
+                product_name: item.product_details?.name || "Unnamed",
+                quantity: item.quantity
+            }));
+            const total_price = calculateTotal().toFixed(2);
+            const orderData = {
+                user_email,
+                items,
+                sellerId,
+                total_price,
+                status: "Pending",
+                created_at: new Date().toISOString()
+            };
+            console.log("Prepared orderData:", orderData);
+    
+            const value = usdToWei(total_price);
+            const tx = await transactionManagementContract.createTransaction(1, {
+                value,
+                gasLimit: 1_000_000
+            });
+            console.log("Transaction sent:", tx.hash);
+            await tx.wait();
+            console.log("Transaction confirmed");
+    
+            // Store order in database
+            const orderResponse = await axios.post('http://localhost:8001/orders', orderData);
+            const orderId = orderResponse.data.id || orderResponse.data._id;
+            localStorage.setItem('current_order_id', orderId);
+    
+            // Send transaction data to backend
+            const transactionPayload = {
+                tx_hash: tx.hash,
+                sender: walletAddress,
+                receiver: sellerId,
+                amount: parseFloat(total_price),
+                order_id: orderId
+            };
+            await axios.post('http://localhost:8001/transactions', transactionPayload);
+            console.log("Transaction saved to backend:", transactionPayload);
+    
+            setStep(3);
         } catch (error) {
-          console.error('Error during payment/order flow:', error.response?.data || error.message);
-          alert(`Failed: ${error.response?.data?.detail ?? error.message}`);
+            console.error('Error during payment/order flow:', error.response?.data || error.message);
+            alert(`Failed: ${error.response?.data?.detail ?? error.message}`);
         } finally {
-          setLoading(false);
+            setLoading(false);
         }
     };
+    
 
     const [orders, setOrders] = useState([]);
     const get_order = () => {
