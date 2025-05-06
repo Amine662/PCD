@@ -56,7 +56,6 @@ async def update_order(order_id: str, order_data: Order, db: Database = Depends(
     updated_order = db["orders"].find_one({"_id": ObjectId(order_id)})
     return serialize_order(updated_order)
 
-# DELETE an order
 @router.delete("/{order_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_order(order_id: str, db: Database = Depends(get_db)):
     order = db["orders"].find_one({"_id": ObjectId(order_id)})
@@ -64,7 +63,6 @@ async def delete_order(order_id: str, db: Database = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Order not found")
     db["orders"].delete_one({"_id": ObjectId(order_id)})
     return None
-
 
 @router.get("/seller/{seller_id}", response_model=List[OrderResponse])
 async def get_orders_by_seller(seller_id: str, db: Database = Depends(get_db)):
@@ -76,21 +74,16 @@ async def get_orders_by_seller(seller_id: str, db: Database = Depends(get_db)):
         del order["_id"]  
     return [OrderResponse(**order) for order in orders]
 
-
-
 @router.post("/ord/", response_model=OrderInDB)
 async def create_order(order: OrderCreate, db:Database = Depends(get_db)):
-    # 1) Read the cart to verify it exists & is not empty
     cart = await db["carts"].find_one({"user_id": ObjectId(order.user_id)})
     if not cart or not cart.get("items"):
         raise HTTPException(400, "Cart is empty")
 
-    # 2) Build order document
     doc = order.dict()
     doc["status"] = "pending"
     doc["created_at"] = datetime.utcnow()
 
-    # 3) Insert order
     result = await db["orders"].insert_one({
         **doc,
         "user_id": ObjectId(order.user_id),
@@ -104,11 +97,7 @@ async def create_order(order: OrderCreate, db:Database = Depends(get_db)):
             for i in order.items
         ]
     })
-
-    # 4) Clear the cart
     await db["carts"].delete_one({"user_id": ObjectId(order.user_id)})
-
-    # 5) Prepare response
     created = await db["orders"].find_one({"_id": result.inserted_id})
     created["_id"] = created.pop("_id")
     return created

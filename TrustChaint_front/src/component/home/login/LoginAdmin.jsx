@@ -21,7 +21,7 @@ const LoginAdmin = () => {
       localStorage.setItem("token", res.data.access_token);
       localStorage.setItem("role", res.data.user.role);
       localStorage.setItem("admin_id", res.data.user.user_id);
-      navigate("/dashboard" );
+      navigate("/admin/dashboard" );
     } catch (err) {
       console.error(err);
       alert("Login failed. Please check your credentials.");

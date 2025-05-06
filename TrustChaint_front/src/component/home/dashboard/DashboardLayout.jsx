@@ -6,13 +6,12 @@ import {
   Menu, 
   X, 
 } from 'lucide-react';
-import logo from '../logo.png'; // Adjust the path as necessary
+import logo from '../logo.png';
 
 const DashboardLayout = ({ children }) => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [role, setRole] = useState(localStorage.getItem('role')); // Store role from localStorage
-
+  const [role, setRole] = useState(localStorage.getItem('role'));
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('email');
@@ -24,11 +23,9 @@ const DashboardLayout = ({ children }) => {
   };
 
   useEffect(() => {
-    // Update role when localStorage changes
     setRole(localStorage.getItem('role'));
   }, []);
 
-  // Determine base path and navigation links based on role
   const basePath = role === 'admin' ? '/admin' : role === 'seller' ? '/seller' : '';
   const navLinks = role === 'admin' ? [
     { path: `${basePath}/dashboard`, label: 'My Dashboard' },
@@ -44,9 +41,7 @@ const DashboardLayout = ({ children }) => {
 
   return (
     <div className="min-vh-100 bg-light text-dark">
-      {/* Dark Header */}
       <header className="d-flex justify-content-between align-items-center bg-dark text-white shadow-sm p-3">
-        {/* Mobile menu toggle */}
         <button 
           className="d-lg-none btn btn-link text-white p-0"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -60,7 +55,6 @@ const DashboardLayout = ({ children }) => {
           onClick={() => navigate("/")}
         />
 
-        {/* Horizontal Nav (desktop) */}
         <nav className="d-none d-lg-block">
           <ul className="nav">
             {navLinks.map((link, index) => (
@@ -76,7 +70,6 @@ const DashboardLayout = ({ children }) => {
           </ul>
         </nav>
 
-        {/* Right Side */}
         <div className="d-flex align-items-center">
           <button className="btn btn-link text-white me-3 position-relative p-0">
             <BellRing size={20} />
@@ -92,7 +85,6 @@ const DashboardLayout = ({ children }) => {
         </div>
       </header>
 
-      {/* Mobile Menu */}
       <div 
         className={`bg-dark text-white position-fixed top-0 start-0 h-100 ${mobileMenuOpen ? 'd-block' : 'd-none'} d-lg-none`} 
         style={{ width: 250, transition: 'all .3s ease', zIndex: 1000 }}
@@ -122,7 +114,6 @@ const DashboardLayout = ({ children }) => {
         </div>
       </div>
 
-      {/* Main Content */}
       <main 
         className="container-fluid p-4" 
         style={{ marginLeft: mobileMenuOpen ? 250 : 0, transition: 'margin .3s ease' }}

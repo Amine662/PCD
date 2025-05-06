@@ -3,14 +3,12 @@ from pydantic import BaseModel
 import models.blockchain_service as blockchain_service
 
 router = APIRouter(prefix="/blockchain", tags=["blockchain"])
-
 class AddProductRequest(BaseModel):
     name: str
     description: str
-    price: int  # in Wei
+    price: int  
     quantity: int
     seller_private_key: str
-
 class UpdateProductRequest(BaseModel):
     product_id: int
     name: str
@@ -19,7 +17,6 @@ class UpdateProductRequest(BaseModel):
     quantity: int
     available: bool
     seller_private_key: str
-
 class BuyProductRequest(BaseModel):
     product_id: int
     buyer_private_key: str

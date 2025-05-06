@@ -21,7 +21,7 @@ const Navbar = () => {
   const [showUserPopup, setShowUserPopup] = useState(false);
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
 
-  const userRole = localStorage.getItem("role"); // get role
+  const userRole = localStorage.getItem("role");
   const userName = localStorage.getItem("user");
   const isLoggedIn = Boolean(localStorage.getItem("token"));
 
@@ -39,9 +39,7 @@ const Navbar = () => {
   }, [showpopup]);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("role");
+    localStorage.clear();
     navigate("/");
   };
 
@@ -79,7 +77,6 @@ const Navbar = () => {
             <div className="col-md-3">
               <div className="d-flex justify-content-end align-items-center">
 
-                {/* User Icon */}
                 <div
                   className="position-relative"
                   onMouseEnter={() => setShowUserPopup(true)}
@@ -100,7 +97,6 @@ const Navbar = () => {
                     </p>
                   </div>
 
-                  {/* User Popup */}
                   {showUserPopup && isLoggedIn && (
                     <div
                       className="position-absolute user-popup"
@@ -135,7 +131,6 @@ const Navbar = () => {
                   )}
                 </div>
 
-                {/* Cart Icon */}
                 <div
                   className="d-flex flex-column align-items-center position-relative text-warning"
                   onClick={() => navigate("/addtocart")}
@@ -155,12 +150,11 @@ const Navbar = () => {
                       fontWeight: "bold",
                     }}
                   >
-                    {/*cartItems.length*/}
+
                   </span>
                   <p className="mb-0 small">My cart</p>
                 </div>
 
-                {/* Seller Dashboard Button */}
                 {userRole === "seller" && (
                   <div
                     className="d-flex flex-column align-items-center text-warning"
@@ -177,7 +171,6 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Nav Tabs */}
         <div className="py-2">
           <div className="container">
             <ul className="nav justify-content-start gap-3">
@@ -223,10 +216,8 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Spacer */}
       <div style={{ height: "180px" }}></div>
 
-      {/* Category Popup */}
       {showpopup && (
         <div
           className="position-fixed bg-white shadow-lg"
@@ -285,7 +276,6 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Hide scrollbar */}
           <style>{`
             .rayon-scroll::-webkit-scrollbar {
               display: none;

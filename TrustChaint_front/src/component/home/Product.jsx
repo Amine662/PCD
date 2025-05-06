@@ -37,15 +37,16 @@ const Product = () => {
             <div className="flex-grow-1">
               <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
                 {products.map(product => (
-                  <div className="col" key={product._id}>
+                  <div className="col" key={product.id}>
                     <div className="card shadow rounded-4 border-0 h-100 product-card hover-shadow">
                       <div className="position-relative" style={{ paddingBottom: '100%' }}>
                         <img
                           src={product.image_url || "https://via.placeholder.com/300"}
                           alt={product.name}
+                          loading="lazy"
                           className="position-absolute top-0 start-0 w-100 h-100 object-fit-cover cursor-pointer"
                           onClick={() => handleProductClick(product.id)}
-                          style={{ borderTopLeftRadius: '1rem', borderTopRightRadius: '1rem' }}
+                          style={{ borderTopLeftRadius: '1rem', borderTopRightRadius: '1rem'}}
                         />
                       </div>
                       <div className="p-3 d-flex flex-column justify-content-between" style={{ minHeight: '150px' }}>
@@ -57,7 +58,7 @@ const Product = () => {
                           <span className="h5 text-dark mb-0">${product.price}</span>
                           <button
                             className="btn p-0 border-0 text-warning"
-                            onClick={() => handleProductClick(product._id)}
+                            onClick={() => handleProductClick(product.id)}
                             title="View Product"
                           >
                             <PlusCircle size={24} strokeWidth={2.2} />

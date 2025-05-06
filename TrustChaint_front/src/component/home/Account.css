@@ -2,7 +2,6 @@ body,
 .account-page-bg {
   background-color: whitesmoke;
 }
-
 .account-banner {
   background: linear-gradient(90deg, #1a1a1a, #f5f6e3);
   border-radius: 12px;
@@ -10,7 +9,6 @@ body,
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   color: white;
 }
-
 .account-logo {
   height: 60px;
 }

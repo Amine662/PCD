@@ -14,9 +14,8 @@ const AdminProfil = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const res = await axios.get('http://localhost:8001/auth/auth/admin');
+        const res = await axios.get('http://localhost:8001/auth/admin');
         console.log("Response Data:", res.data.user);
-
         if (res.data.user) {
           setUser({ ...res.data.user, password: '' });
         } else {
@@ -27,7 +26,6 @@ const AdminProfil = () => {
         setError('Failed to fetch admin data');
       }
     };
-
     fetchUserData();
   }, []);
 
@@ -36,15 +34,13 @@ const AdminProfil = () => {
     setLoading(true);
     setError(null);
     setSuccess(null);
-
     try {
       const res = await axios.put(`http://localhost:8001/auth/update/${user.user_id}`, user, {
         headers: { 'Content-Type': 'application/json' },
       });
-
       console.log('Update Success:', res.data);
       setSuccess('Profile updated successfully!');
-      setUser(prev => ({ ...prev, password: '' })); // Clear password field
+      setUser(prev => ({ ...prev, password: '' }));
     } catch (err) {
       console.error('Update Error:', err);
       setError('Failed to update profile');
@@ -52,7 +48,6 @@ const AdminProfil = () => {
       setLoading(false);
     }
   };
-
   return (
     <DashboardLayout>
       <Container>
@@ -74,7 +69,6 @@ const AdminProfil = () => {
                       onChange={(e) => setUser({ ...user, name: e.target.value })}
                     />
                   </Form.Group>
-
                   <Form.Group className="mb-3">
                     <Form.Label>Email</Form.Label>
                     <Form.Control
@@ -83,7 +77,6 @@ const AdminProfil = () => {
                       onChange={(e) => setUser({ ...user, email: e.target.value })}
                     />
                   </Form.Group>
-
                   <Form.Group className="mb-3">
                     <Form.Label>Age</Form.Label>
                     <Form.Control
@@ -92,7 +85,6 @@ const AdminProfil = () => {
                       onChange={(e) => setUser({ ...user, age: e.target.value })}
                     />
                   </Form.Group>
-
                   <Form.Group className="mb-3">
                     <Form.Label>New Password</Form.Label>
                     <Form.Control
@@ -102,7 +94,6 @@ const AdminProfil = () => {
                       onChange={(e) => setUser({ ...user, password: e.target.value })}
                     />
                   </Form.Group>
-
                   <Button variant="dark" type="submit" disabled={loading}>
                     {loading ? <Spinner animation="border" size="sm" /> : 'Update Info'}
                   </Button>

@@ -64,7 +64,6 @@ const ManageProducts = () => {
     setSellerId(id);
     setAdminId(ad_id);
 
-    // Set adminId if the role is admin
     if (role === 'admin') {
       setSellerId(ad_id);
     }
@@ -135,8 +134,7 @@ const ManageProducts = () => {
       let imageUrl = '';
       const imageData = new FormData();
       imageData.append('file', imageFile);
-  
-      // Step 1: Upload image to Cloudinary
+
       if (imageFile) {
         const cloudinaryRes = await axios.post(
           'http://localhost:8001/upload-image',
@@ -145,21 +143,7 @@ const ManageProducts = () => {
   
         imageUrl = cloudinaryRes.data.original_url;
       }
-  
-      // Step 2: Add product to blockchain
-      const blockchainPayload = {
-        name: productData.name,
-        description: productData.description,
-        price: parseInt(productData.price), // Ensure integer (Wei)
-        quantity: parseInt(productData.quantity),
-        seller_private_key: ganachePrivateKey
-      };
-      const blockchainRes = await axios.post('http://localhost:8001/blockchain/add_product', blockchainPayload);
-      if (!blockchainRes.data.tx_hash) {
-        throw new Error('Blockchain transaction failed');
-      }
-  
-      // Step 3: Add product to DB
+
       const productPayload = {
         name: productData.name,
         quantity: productData.quantity,
@@ -187,7 +171,6 @@ const ManageProducts = () => {
     }
   };
   
-
   const handleCloseModals = () => {
     setShowViewModal(false);
     setShowEditModal(false);
@@ -274,7 +257,6 @@ const ManageProducts = () => {
         </Row>
       </Container>
 
-      {/* Modals for view, edit, add, and delete */}
       <Modal show={showViewModal} onHide={handleCloseModals}>
         <Modal.Header closeButton>
           <Modal.Title>View Product</Modal.Title>
@@ -374,17 +356,6 @@ const ManageProducts = () => {
               <Form.Control type="text" value={productData.category} onChange={(e) => setProductData({ ...productData, category: e.target.value })} />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Ganache Private Key</Form.Label>
-              <Form.Control
-                type="password"
-                value={ganachePrivateKey}
-                onChange={(e) => setGanachePrivateKey(e.target.value)}
-                placeholder="Paste your Ganache private key here"
-                required
-              />
-              <Form.Text className="text-muted">
-                This is only for local testing. Never use a real wallet key here!
-              </Form.Text>
             </Form.Group>
           </Modal.Body>
           <Modal.Footer>

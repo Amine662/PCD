@@ -1,25 +1,21 @@
 import React from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import "./SecureShopping.css";
 import { MdHighQuality } from "react-icons/md";
 import { IoMdTime } from "react-icons/io";
 import { MdOutlineVerifiedUser } from "react-icons/md";
 
 const SecureShopping = () => {
-  const navigate = useNavigate(); // Initialize navigate function
-
+  const navigate = useNavigate(); 
   return (
     <section className="position-relative text-white bg-dark overflow-hidden secure-shopping-bg">
-      {/* Floating shapes */}
       <div className="floating-shapes position-absolute w-100 h-100">
         <div className="shape purple"></div>
         <div className="shape indigo"></div>
         <div className="shape teal"></div>
       </div>
-
       <div className="container py-5 py-md-5 position-relative" style={{ zIndex: 10 }}>
         <div className="row align-items-center">
-          {/* Text Content */}
           <div className="col-md-6 text-center text-md-start">
             <h1 className="display-5 fw-bold mb-4">
               Secure Shopping <br />
@@ -38,7 +34,6 @@ const SecureShopping = () => {
             </div>
           </div>
 
-          {/* Image */}
           <div className="col-md-6 d-none d-md-block position-relative">
             <div className="position-relative" style={{ height: "400px" }}>
               <div className="rounded-4 shadow position-absolute w-100 h-100"
@@ -53,7 +48,6 @@ const SecureShopping = () => {
           </div>
         </div>
 
-        {/* Features */}
         <div className="row mt-5">
           <div className="col-md-4 mb-4">
             <div className="bg-white bg-opacity-10 p-4 rounded shadow-sm h-100 text-center feature-box">
@@ -84,7 +78,6 @@ const SecureShopping = () => {
           </div>
         </div>
 
-        {/* CTA Button */}
         <div className="d-flex flex-column flex-sm-row justify-content-center gap-3">
   <button 
     onClick={() => navigate("/login-seller")} 
@@ -100,3 +93,5 @@ const SecureShopping = () => {
 };
 
 export default SecureShopping;
+
+

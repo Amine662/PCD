@@ -1,7 +1,6 @@
 from .blockchain_config import web3, product_contract, transaction_contract
 from web3.exceptions import ContractLogicError
 
-# Example: Add a product (for sellers)
 def add_product(name, description, price, quantity, seller_private_key):
     account = web3.eth.account.from_key(seller_private_key)
     nonce = web3.eth.get_transaction_count(account.address)
@@ -15,7 +14,7 @@ def add_product(name, description, price, quantity, seller_private_key):
     tx_hash = web3.eth.send_raw_transaction(signed_txn.raw_transaction)
     return web3.to_hex(tx_hash)
 
-# Example: Update a product (for sellers)
+
 def update_product(product_id, name, description, price, quantity, available, seller_private_key):
     account = web3.eth.account.from_key(seller_private_key)
     nonce = web3.eth.get_transaction_count(account.address)
@@ -29,7 +28,6 @@ def update_product(product_id, name, description, price, quantity, available, se
     tx_hash = web3.eth.send_raw_transaction(signed_txn.raw_transaction)
     return web3.to_hex(tx_hash)
 
-# Example: Buy a product (for buyers)
 def buy_product(product_id, buyer_private_key, value):
     account = web3.eth.account.from_key(buyer_private_key)
     nonce = web3.eth.get_transaction_count(account.address)

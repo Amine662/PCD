@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import DashboardLayout from './dashboard/DashboardLayout';
 import StatCard from './dashboard/StatCard';
 import ActionCard from './dashboard/ActionCard';
@@ -10,13 +9,11 @@ import ActivityList from './dashboard/ActivityList';
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const userName = localStorage.getItem("user");
-
   const cardStyle = {
     boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
-    borderRadius: '0.375rem', // Same as Bootstrap's .rounded-3
+    borderRadius: '0.375rem',
     transition: 'transform 0.3s ease, box-shadow 0.3s ease'
   };
-
   const hoverStyle = {
     transform: 'translateY(-5px)',
     boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)'
@@ -24,15 +21,12 @@ const AdminDashboard = () => {
 
   return (
     <DashboardLayout>
-      {/* Welcome Section */}
       <div className="text-center mb-4">
         <h1 className="h3 fw-bold mb-2">
           Welcome {userName} <span className="d-none d-sm-inline">👋</span>
         </h1>
         <p className="text-muted">Here's what's happening with your store today</p>
       </div>
-
-      {/* Stats Grid */}
       <div className="row g-4 mb-5">
         <div className="col-12 col-sm-6 col-lg-3">
           <StatCard
@@ -46,6 +40,7 @@ const AdminDashboard = () => {
             onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
           />
         </div>
+
         <div className="col-12 col-sm-6 col-lg-3">
           <StatCard
             iconClass="bi-box-seam"
@@ -58,6 +53,7 @@ const AdminDashboard = () => {
             onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
           />
         </div>
+
         <div className="col-12 col-sm-6 col-lg-3">
           <StatCard
             iconClass="bi-cart"
@@ -70,6 +66,7 @@ const AdminDashboard = () => {
             onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
           />
         </div>
+
         <div className="col-12 col-sm-6 col-lg-3">
           <StatCard
             iconClass="bi-currency-dollar"
@@ -83,8 +80,7 @@ const AdminDashboard = () => {
           />
         </div>
       </div>
-
-      {/* Quick Actions */}
+      
       <h2 className="h5 fw-bold mb-3">Quick Actions</h2>
       <div className="row g-4 mb-5">
         <div className="col-12 col-sm-6 col-lg-3">
@@ -110,8 +106,8 @@ const AdminDashboard = () => {
           />
         </div>
         <div className="col-12 col-sm-6 col-lg-3">
-          <ActionCard
-            iconClass="bi-truck"
+          <ActionCard 
+            iconClass="bi-truck" 
             title="Manage Orders"
             description="Track and update orders"
             onClick={() => navigate('/admin/manage-orders')}
@@ -132,10 +128,7 @@ const AdminDashboard = () => {
           />
         </div>
       </div>
-
-      {/* Charts & Activity Section */}
       <div className="row g-4 mb-5">
-        {/* Sales Chart */}
         <div className="col-12 col-lg-8">
           <div className="card h-100 shadow-lg rounded-3" style={cardStyle}>
             <div className="card-header d-flex align-items-center">
@@ -147,8 +140,6 @@ const AdminDashboard = () => {
             </div>
           </div>
         </div>
-
-        {/* Recent Activity */}
         <div className="col-12 col-lg-4">
           <div className="card h-100 shadow-lg rounded-3" style={cardStyle}>
             <div className="card-header">
@@ -160,8 +151,6 @@ const AdminDashboard = () => {
           </div>
         </div>
       </div>
-
-      {/* Performance Metrics */}
       <div className="card mb-5 shadow-lg rounded-3" style={cardStyle}>
         <div className="card-body">
           <h5 className="mb-4 fw-bold">Performance Metrics</h5>
@@ -211,5 +200,5 @@ const AdminDashboard = () => {
     </DashboardLayout>
   );
 };
-
 export default AdminDashboard;
+

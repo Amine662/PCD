@@ -42,7 +42,7 @@ async def error_handling_middleware(request: Request, call_next):
                 }
             }
         )
-
+    
 if __name__ == "__main__":
     uvicorn.run(
         app, 
@@ -53,10 +53,9 @@ if __name__ == "__main__":
         log_level="debug"
     )
 
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # React dev server
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

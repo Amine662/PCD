@@ -7,14 +7,11 @@ import axios from "axios";
 const LoginSeller = () => {
   const navigate = useNavigate();
   const [action, setAction] = useState("Log In");
-
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  const API_URL = "http://localhost:8001/auth/register-seller"; // adjust if needed
-
+  const API_URL = "http://localhost:8001/auth/register-seller";
   const handleSignUp = async (e) => {
     e.preventDefault();
     try {
@@ -31,7 +28,7 @@ const LoginSeller = () => {
       alert("Sign up failed");
     }
   };
-
+  
   const handleLogIn = async (e) => {
     e.preventDefault();
     try {

@@ -1,7 +1,6 @@
 from enum import Enum
 from typing import Dict, Any
 
-##not used yet
 class ErrorCode(Enum):
     INVALID_CREDENTIALS = (1000, "Invalid username or password")
     TOKEN_EXPIRED = (1001, "Authentication token has expired")

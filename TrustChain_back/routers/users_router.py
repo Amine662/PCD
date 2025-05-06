@@ -1,13 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from bson import ObjectId
 from pymongo.database import Database
-from typing import Annotated
 from pymongo.errors import DuplicateKeyError
-from models.user_model import User, UserUpdate, LoginRequest
+from models.user_model import User, UserUpdate
 from models.errors import ErrorCode, APIError
 from db import get_db
-from auth import get_current_user
-from auth import get_current_admin
 
 router = APIRouter(tags=["users"])
 

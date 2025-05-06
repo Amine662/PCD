@@ -10,7 +10,7 @@ const ManageUsers = () => {
   const [error, setError] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false); // State for delete confirmation modal
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [userData, setUserData] = useState({
     name: '',
@@ -38,8 +38,8 @@ const ManageUsers = () => {
   const handleDelete = async () => {
     try {
       await axios.delete(`http://localhost:8001/users/${selectedUser._id}`);
-      setUsers(users.filter((user) => user._id !== selectedUser._id)); // Remove deleted user from the list
-      setShowDeleteModal(false); // Close the delete modal
+      setUsers(users.filter((user) => user._id !== selectedUser._id)); 
+      setShowDeleteModal(false); 
     } catch (err) {
       console.error(err);
       setError('Failed to delete user.');
@@ -93,7 +93,6 @@ const ManageUsers = () => {
               </Card.Header>
               <Card.Body>
 
-                {/* Filters */}
                 <Row className="mb-3">
                   <Col md={6} className="mb-2">
                     <Form.Control
@@ -115,7 +114,6 @@ const ManageUsers = () => {
                   </Col>
                 </Row>
 
-                {/* Table */}
                 {loading ? (
                   <div className="text-center">
                     <Spinner animation="border" variant="dark" />
@@ -185,7 +183,6 @@ const ManageUsers = () => {
         </Row>
       </Container>
 
-      {/* Modal for Viewing/Editing User */}
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
           <Modal.Title>{isEditing ? 'Edit User' : 'User Details'}</Modal.Title>
@@ -247,7 +244,6 @@ const ManageUsers = () => {
         </Modal.Footer>
       </Modal>
 
-      {/* Delete Confirmation Modal */}
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Delete User</Modal.Title>
@@ -261,7 +257,6 @@ const ManageUsers = () => {
         </Modal.Footer>
       </Modal>
 
-      {/* Small CSS for icon hover effect */}
       <style jsx="true">{`
         .action-icon:hover svg {
           transform: scale(1.3);

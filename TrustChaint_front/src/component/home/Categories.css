@@ -6,12 +6,10 @@
   .category-scroll::-webkit-scrollbar {
     display: none;
   }
-  
   .category-item {
     flex: 0 0 auto;
     width: 160px;
   }
-  
   .category-box {
     width: 100%;
     height: 220px;

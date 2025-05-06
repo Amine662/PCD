@@ -1,17 +1,15 @@
 import React from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
-import "./About.css"; // Import your CSS file for custom styles
+import { useNavigate } from "react-router-dom";
+import "./About.css"; 
 
 const About = () => {
-  const navigate = useNavigate(); // Initialize navigate function
-
+  const navigate = useNavigate();
   return (
     <section style={{ backgroundColor: "#1a1a1a", height:"740px" }} className="text-white py-5">
       <div className="container">
         <h1 className="display-5 fw-bold mb-4 text-center">
           About <span className="text-warning">Us</span>
         </h1>
-
         <div className="row justify-content-center mb-5">
           <div className="col-lg-10">
             <p className="lead text-light">
@@ -23,7 +21,6 @@ const About = () => {
             </p>
           </div>
         </div>
-
         <div className="row text-center text-md-start">
           <div className="col-md-4 mb-4">
             <h4 className="fw-semibold text-warning">Why Blockchain?</h4>
@@ -50,19 +47,14 @@ const About = () => {
             </p>
           </div>
         </div>
-
         <div className="text-center mt-5">
           <h5 className="fw-semibold mb-3">Join Us</h5>
           <p className="text-light">
             Whether you're a first-time buyer or a blockchain enthusiast, we invite you to shop with confidence. Welcome to the future of shopping.
           </p>
-
-          {/* Start Shopping Button */}
           <button onClick={() => navigate("/product")} className="btn btn-warning mt-3 px-4">
             Start Shopping
           </button>
-          
-          {/* Go Back to Home Link */}
           <p className="mt-2">
             <button onClick={() => navigate("/home")} className="text-white text-decoration-underline border-0 bg-transparent">
               Go Back to Home
@@ -73,5 +65,4 @@ const About = () => {
     </section>
   );
 };
-
-export default About;
+export default About ;

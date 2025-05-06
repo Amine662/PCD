@@ -6,7 +6,7 @@ class User(BaseModel):
     age: int
     email: str
     password: str
-    role: Optional[str] = "user"  # Default role is 'user'
+    role: Optional[str] = "user"
 
 class UserUpdate(BaseModel):
     name: Optional[str] = None

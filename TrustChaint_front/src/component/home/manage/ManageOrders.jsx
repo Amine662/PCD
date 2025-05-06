@@ -41,7 +41,7 @@ const ManageOrders = () => {
         url = 'http://localhost:8001/orders';
       } else if (userRole === 'seller') {
         if (!sellerId) throw new Error('Seller ID is missing');
-        url = `http://localhost:8001/orders/orders/seller/${sellerId}`;
+        url = `http://localhost:8001/orders/seller/${sellerId}`;
       } else {
         throw new Error('Invalid role');
       }
@@ -56,7 +56,6 @@ const ManageOrders = () => {
     }
   }, [userRole, sellerId]);
 
-  // pull role + id on mount
   useEffect(() => {
     const role = localStorage.getItem('role');
     const id   = localStorage.getItem('user_id');
@@ -64,7 +63,6 @@ const ManageOrders = () => {
     setSellerId(id);
   }, []);
 
-  // fetch whenever role or sellerId changes
   useEffect(() => {
     if (userRole === 'admin' || (userRole === 'seller' && sellerId)) {
       fetchOrders();
@@ -134,7 +132,7 @@ const ManageOrders = () => {
                 Manage Orders
               </Card.Header>
               <Card.Body>
-                {/* Filters */}
+
                 <Row className="mb-3">
                   <Col md={6} className="mb-2">
                     <Form.Control
@@ -154,7 +152,6 @@ const ManageOrders = () => {
                   </Col>
                 </Row>
 
-                {/* Table */}
                 {loading ? (
                   <div className="text-center"><Spinner animation="border" /></div>
                 ) : error ? (
@@ -210,7 +207,6 @@ const ManageOrders = () => {
         </Row>
       </Container>
 
-      {/* View/Edit Modal */}
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
           <Modal.Title>{isEditing ? 'Edit Order' : 'Order Details'}</Modal.Title>

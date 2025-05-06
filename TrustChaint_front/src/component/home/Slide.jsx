@@ -18,15 +18,12 @@ import a10 from "./inspired/a10.png";
 import a11 from "./inspired/a11.png";
 import a12 from "./inspired/a12.png";
 
-
 const Slide = () => {
   const navigate = useNavigate();
   const [currentProductSlide, setCurrentProductSlide] = useState(0);
   const [currentBannerSlide, setCurrentBannerSlide] = useState(0);
   const { addToCart } = useCart();
 
-  
-  // Banner images data
   const bannerImages = [
     {
       id: 1,
@@ -153,58 +150,50 @@ const Slide = () => {
     ]
   ];
   
-
-  // Auto-slide functionality for product carousel
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentProductSlide((prevSlide) => 
         prevSlide === productSlides.length - 1 ? 0 : prevSlide + 1
       );
-    }, 5000); // Change slide every 5 seconds
+    }, 5000); 
     
     return () => clearInterval(timer);
   }, [productSlides.length]);
   
-  // Auto-slide functionality for banner carousel
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentBannerSlide((prevSlide) => 
         prevSlide === bannerImages.length - 1 ? 0 : prevSlide + 1
       );
-    }, 4000); // Change banner every 4 seconds
+    }, 4000);
     
     return () => clearInterval(timer);
   }, [bannerImages.length]);
 
-  // Function to move to previous slide for products
   const prevProductSlide = () => {
     setCurrentProductSlide((prevSlide) => 
       prevSlide === 0 ? productSlides.length - 1 : prevSlide - 1
     );
   };
 
-  // Function to move to next slide for products
   const nextProductSlide = () => {
     setCurrentProductSlide((prevSlide) => 
       prevSlide === productSlides.length - 1 ? 0 : prevSlide + 1
     );
   };
   
-  // Function to move to previous banner
   const prevBannerSlide = () => {
     setCurrentBannerSlide((prevSlide) => 
       prevSlide === 0 ? bannerImages.length - 1 : prevSlide - 1
     );
   };
 
-  // Function to move to next banner
   const nextBannerSlide = () => {
     setCurrentBannerSlide((prevSlide) => 
       prevSlide === bannerImages.length - 1 ? 0 : prevSlide + 1
     );
   };
   
-  // Function to select a specific banner slide
   const goToBannerSlide = (index) => {
     setCurrentBannerSlide(index);
   };
@@ -213,7 +202,6 @@ const Slide = () => {
     <div className="bg-light py-4">
       <div className="container">
 
-        {/* Banner Image Carousel */}
         <div className="position-relative mb-4">
           <div className="carousel-container overflow-hidden rounded">
             <div 
@@ -239,7 +227,6 @@ const Slide = () => {
             </div>
           </div>
           
-          {/* Banner Navigation Arrows */}
           <button 
             className="position-absolute top-50 start-0 translate-middle-y btn btn-light rounded-circle p-2 ms-2 shadow" 
             onClick={prevBannerSlide}
@@ -255,8 +242,7 @@ const Slide = () => {
           >
             <span className="fw-bold">&rsaquo;</span>
           </button>
-          
-          {/* Banner Indicators */}
+        
           <div className="position-absolute bottom-0 start-50 translate-middle-x mb-3">
             <div className="d-flex gap-2">
               {bannerImages.map((_, index) => (
@@ -272,7 +258,6 @@ const Slide = () => {
           </div>
         </div>
 
-        {/* Feature List */}
         <div className="row g-3 mb-4 text-center">
           <div className="col-12 col-sm-6 col-lg-3">
             <button
@@ -312,7 +297,6 @@ const Slide = () => {
           </div>
         </div>
 
-        {/* "Inspiré de vos visites" with Sliding Window and Product Images */}
         <div className="position-relative mb-5">
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h2 className="fs-3 fw-normal mb-0">Inspired by your visits</h2>
@@ -333,7 +317,7 @@ const Slide = () => {
               </button>
             </div>
           </div>
-          
+
           <div className="carousel-container overflow-hidden">
             <div 
               className="carousel-slides d-flex transition-transform" 
@@ -365,13 +349,7 @@ const Slide = () => {
                           <h5 className="fs-6 mb-1">{product.title}</h5>
                           <div className="d-flex justify-content-between align-items-center">
                             <div className="fw-bold text-danger">{product.price}</div>
-                            <button 
-  className="btn btn-sm text-white" 
-  style={{ backgroundColor: "#1a1a1a" }}
-  onClick={addToCart}
->
-  Add To Cart
-</button>
+                            <button className="btn btn-sm text-white" style={{ backgroundColor: "#1a1a1a" }} onClick={addToCart}> Add To Cart </button>
 
                           </div>
                         </div>

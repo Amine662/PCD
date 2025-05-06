@@ -7,14 +7,11 @@ import { FiYoutube } from "react-icons/fi";
 const Footer = () => {
   return (
     <footer className="text-white pt-0">
-      {/* Back to Top */}
       <div className="bg-white text-center py-2">
         <a href="#top" className="text-dark fw-semibold text-decoration-none">
           Back to top <FaArrowUp className="ms-2" size={12} />
         </a>
       </div>
-
-      {/* Social Follow Section */}
       <div className="bg-dark text-center py-3">
         <p className="mb-2">
           Millions of you already follow us to get our news, tips, and great deals!
@@ -26,12 +23,9 @@ const Footer = () => {
           <FiYoutube />
         </div>
       </div>
-
-      {/* Footer Columns */}
       <div className="bg-secondary text-white py-4">
         <div className="container">
           <div className="row gy-4">
-            {/* Column 1 */}
             <div className="col-12 col-md-4 col-lg-2">
               <h6 className="fw-bold">SERVICES & WARRANTIES</h6>
               <ul className="list-unstyled">
@@ -42,7 +36,6 @@ const Footer = () => {
               </ul>
             </div>
 
-            {/* Column 2 */}
             <div className="col-12 col-md-4 col-lg-2 border-start ps-3">
               <h6 className="fw-bold">DELIVERY & PAYMENT</h6>
               <ul className="list-unstyled">
@@ -55,7 +48,6 @@ const Footer = () => {
               </ul>
             </div>
 
-            {/* Column 3 */}
             <div className="col-12 col-md-4 col-lg-2 border-start ps-3">
               <h6 className="fw-bold">CONTACT US</h6>
               <ul className="list-unstyled">
@@ -68,7 +60,6 @@ const Footer = () => {
               </ul>
             </div>
 
-            {/* Column 4 */}
             <div className="col-12 col-md-4 col-lg-2 border-start ps-3">
               <h6 className="fw-bold">MARKETPLACE</h6>
               <ul className="list-unstyled">
@@ -78,7 +69,6 @@ const Footer = () => {
               </ul>
             </div>
 
-            {/* Column 5 */}
             <div className="col-12 col-md-4 col-lg-3 border-start ps-3">
               <h6 className="fw-bold">LEGAL INFORMATION</h6>
               <ul className="list-unstyled">

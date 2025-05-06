@@ -1,11 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
-
 const CartContext = createContext();
 export const useCart = () => useContext(CartContext);
-
 export const CartProvider = ({ children }) => {
-  const [items, setItems] = useState([]); // holds { product, quantity, seller_id }
+  const [items, setItems] = useState([]); 
   const [cartDetails, setCartDetails] = useState([]);
 
   useEffect(() => {
@@ -18,13 +16,10 @@ export const CartProvider = ({ children }) => {
 
   const fetchCartDetails = async () => {
     try {
-      const productIds = items.map(item => item.product); // only IDs
+      const productIds = items.map(item => item.product); 
       console.log('Product IDs to fetch:', productIds);
-
       const response = await axios.post('http://localhost:8001/api/products/cart-products', productIds);
       const fetchedProducts = response.data;
-
-      // Combine fetched product details with local quantity and seller_id
       const mergedCart = fetchedProducts.map(product => {
         const matchedItem = items.find(item => item.product.id === product.id);
         return {
@@ -33,7 +28,6 @@ export const CartProvider = ({ children }) => {
           seller_id: matchedItem?.seller_id || null
         };
       });
-
       setCartDetails(mergedCart);
     } catch (error) {
       console.error('Error fetching cart details:', error);
@@ -49,7 +43,6 @@ export const CartProvider = ({ children }) => {
     setItems(prev => {
       const existing = prev.find(item => item.product.id === product.id);
       if (existing) {
-        console.log("helloooooooooooooooooooooo");
         return prev.map(item =>
           item.product.id === product.id
             ? { ...item, quantity: item.quantity + quantity }
@@ -61,12 +54,9 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-
   const removeFromCart = async (productId) => {
     try {
       const userId = localStorage.getItem('user_id');
-      console.log("Removing item with product_id:", productId);  // log for debugging
-  
       await axios.delete(`http://localhost:8001/cart/cart/${userId}/item/${productId}`);
       
       setItems(prev =>
@@ -78,9 +68,6 @@ export const CartProvider = ({ children }) => {
     }
   };
   
-  
-  
-
   const clearCart = async () => {
     try {
       const userId = localStorage.getItem('user_id');

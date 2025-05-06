@@ -19,13 +19,11 @@ const images = [
   b1, b2, b3, b4, b5, b6, b7,
   b8, b9, b10, b11, b12, b13, b14
 ];
-
 const titles = [
   "Home Appliances", "Computing", "Phones", "Home",
   "Garden", "Beauty" , "Kids", "Sports", "Fashion",
   "Automobiles","gaming", "Garden", "Pets", "Books & Culture",
 ];
-
 const Categories = () => {
   const scrollRef = useRef(null);
   const scroll = (offset) => {
@@ -33,7 +31,6 @@ const Categories = () => {
       scrollRef.current.scrollBy({ left: offset, behavior: "smooth" });
     }
   };
-
   return (
     <div className="bg-light mt-5 py-4">
       <div className="container">
@@ -71,5 +68,4 @@ const Categories = () => {
     </div>
   );
 };
-
 export default Categories;

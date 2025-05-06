@@ -11,15 +11,12 @@ const SellerDashboard = () => {
 
   return (
     <DashboardLayout>
-      {/* Welcome Section */}
       <div className="text-center mb-4">
         <h1 className="h3 fw-bold mb-2">
           Welcome {userName} <span className="d-none d-sm-inline">👋</span>
         </h1>
         <p className="text-muted">Here's what's happening with your store today</p>
       </div>
-
-      {/* Stats Grid */}
       <div className="row g-4 mb-5 justify-content-center">
         <div className="col-12 col-sm-6 col-lg-3">
           <StatCard
@@ -47,7 +44,6 @@ const SellerDashboard = () => {
         </div>
       </div>
 
-      {/* Quick Actions */}
       <h2 className="h5 fw-bold mb-3 text-center">Quick Actions</h2>
       <div className="row g-4 mb-5 justify-content-center">
         <div className="col-12 col-sm-6 col-lg-3">
@@ -76,7 +72,6 @@ const SellerDashboard = () => {
         </div>
       </div>
 
-      {/* Store Performance Summary */}
       <div className="card mb-5">
         <div className="card-body">
           <h5 className="mb-4 fw-bold text-center">Store Performance Summary</h5>

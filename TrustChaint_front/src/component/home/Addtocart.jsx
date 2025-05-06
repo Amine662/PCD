@@ -16,15 +16,18 @@ const Addtocart = () => {
       .then((r) => {
         setCartDetails(r.data);
         localStorage.setItem('finalcart', JSON.stringify(r.data));
+        console.log("test",r.data);
       })
       .catch((err) => console.log(err));
   }, []);
 
-  // Order summary calculations
-  const subtotal = cartDetails.items.reduce(
-    (sum, item) => sum + item.product_details.price * item.quantity,
-    0
-  );
+  const subtotal = cartDetails.items.reduce((sum, item) => {
+    if (item?.product_details && typeof item.product_details.price === 'number') {
+      return sum + item.product_details.price * item.quantity;
+    }
+    return sum;
+  }, 0);
+
   const shipping = subtotal > 0 ? 5.0 : 0;
   const taxRate = 0.07;
   const tax = subtotal * taxRate;
@@ -72,18 +75,26 @@ const Addtocart = () => {
                       </button>
 
                       <div className="flex-shrink-0 me-3">
-                        <img
-                          src={item.product_details.image_url}
-                          className="img-thumbnail"
-                          style={{ width: '80px', height: '80px', objectFit: 'cover' }}
-                          alt={item.product_details.name}
-                        />
+                        {item.product_details?.image_url ? (
+                          <img
+                            src={item.product_details.image_url}
+                            className="img-thumbnail"
+                            style={{ width: '80px', height: '80px', objectFit: 'cover' }}
+                            alt={item.product_details.name}
+                          />
+                        ) : (
+                          <div className="bg-secondary text-white d-flex align-items-center justify-content-center" style={{ width: '80px', height: '80px' }}>
+                            No Image
+                          </div>
+                        )}
                       </div>
 
                       <div className="flex-grow-1">
-                        <h5 className="mb-1">{item.product_details.name}</h5>
-                        <p className="mb-1 text-muted small">{item.product_details.category}</p>
-                        <p className="mb-0 text-muted">${item.product_details.price}</p>
+                        <h5 className="mb-1">{item.product_details?.name || 'Unnamed Product'}</h5>
+                        <p className="mb-1 text-muted small">{item.product_details?.category || 'Uncategorized'}</p>
+                        <p className="mb-0 text-muted">
+                          ${item.product_details?.price?.toFixed(2) || '0.00'}
+                        </p>
                       </div>
 
                       <div className="mx-3">
@@ -91,7 +102,11 @@ const Addtocart = () => {
                       </div>
 
                       <div className="text-end me-3" style={{ width: '100px' }}>
-                        <strong>${(item.product_details.price * item.quantity).toFixed(2)}</strong>
+                        <strong>
+                          ${item.product_details?.price
+                            ? (item.product_details.price * item.quantity).toFixed(2)
+                            : '0.00'}
+                        </strong>
                       </div>
                     </div>
                   ))
@@ -105,7 +120,6 @@ const Addtocart = () => {
               </div>
             </div>
 
-            {/* ✅ Order Summary */}
             <div className="col-lg-4">
               <div className="bg-white rounded p-4 shadow-sm sticky-top" style={{ top: '100px' }}>
                 <h2 className="h5 fw-bold mb-3">Order Summary</h2>
@@ -145,7 +159,6 @@ const Addtocart = () => {
                 </div>
               </div>
             </div>
-            {/* ✅ End Order Summary */}
           </div>
         </div>
       </div>

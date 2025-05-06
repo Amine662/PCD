@@ -31,33 +31,50 @@ const ProductDetail = () => {
   }, [id]);
 
   const handleAddToCart = () => {
-    addToCart(String(product.id), quantity, product.seller_id);
-    axios.post('http://localhost:8001/cart', {
+    const payload = {
       user_id: localStorage.getItem('user_id'),
       items: [{
         product_id: product.id,
         quantity,
         seller_id: product.seller_id,
+        product_details: {
+          name: product.name,
+          description: product.description,
+          price: product.price,
+          quantity: product.quantity||1,
+          sellerId: product.seller_id,
+          image_url: product.image_url,
+          category: product.category
+        }
       }]
-    })
-    .then(() => {
-      Swal.fire({
-        title: 'Product Added!',
-        text: `${product.name} has been added to your cart.`,
-        icon: 'success',
-        showConfirmButton: false,
-        timer: 1800,
-        toast: true,
-        position: 'top-end',
-        background: '#fff',
-        color: '#1a1a1a',
-        customClass: {
-          popup: 'rounded-4 shadow',
-        },
+    };
+  
+    console.log("Posting to /cart:", payload); // Debugging output
+  
+    addToCart(String(product.id), quantity, product.seller_id);
+  
+    axios.post('http://localhost:8001/cart', payload)
+      .then(() => {
+        Swal.fire({
+          title: 'Product Added!',
+          text: `${product.name} has been added to your cart.`,
+          icon: 'success',
+          showConfirmButton: false,
+          timer: 1800,
+          toast: true,
+          position: 'top-end',
+          background: '#fff',
+          color: '#1a1a1a',
+          customClass: {
+            popup: 'rounded-4 shadow',
+          },
+        });
+      })
+      .catch(err => {
+        console.error("Error adding to cart:", err.response?.data || err.message);
       });
-    })
-    .catch(err => console.log(err));
   };
+  
 
   const handleBuyNow = () => {
     handleAddToCart();

@@ -3,7 +3,7 @@ import { GiPadlock } from "react-icons/gi";
 import { MdOutlineVerifiedUser } from "react-icons/md";
 import { CiCreditCard1 } from "react-icons/ci";
 import { IoFlashSharp } from "react-icons/io5";
-import './chooseus.css'; // Assuming you have a CSS file for styles
+import './chooseus.css'; 
 
 const Chooseus = () => {
   return (

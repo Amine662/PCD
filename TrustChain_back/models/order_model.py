@@ -4,15 +4,15 @@ from datetime import datetime
 from models.cart_model import CartItem
 
 class OrderItem(BaseModel):
-    product_name: str  # or int depending on your product id type
+    product_name: str  
     quantity: int
 
 class Order(BaseModel):
-    user_email: str  # or int if your user ID is integer
+    user_email: str 
     items: List[OrderItem]
     sellerId: str
     total_price: float
-    status: Optional[str] = "Pending"  # Default status is Pending
+    status: Optional[str] = "Pending"
     created_at: Optional[datetime] = None
 
 class OrderResponse(Order):
@@ -21,7 +21,6 @@ class OrderResponse(Order):
 
     class Config:
         orm_mode = True
-
 
 class OrderCreate(BaseModel):
     user_id: str
